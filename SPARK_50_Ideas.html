@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>SPARK Guard — 50 اقتراح تطوير</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap');
+
+:root {
+  --bg:#05050A;
+  --c1:#0E0E1C;
+  --c2:#141424;
+  --c3:#1A1A2E;
+  --a1:#FF6B35;
+  --a2:#7C3AED;
+  --a3:#10B981;
+  --a4:#F59E0B;
+  --a5:#3B82F6;
+  --a6:#EC4899;
+  --tx:#EDE9FE;
+  --mu:#6B6880;
+  --bd:rgba(255,255,255,0.06);
+
+  --cat1:#FF6B35; /* أمان وحماية */
+  --cat2:#10B981; /* مالية وربحية */
+  --cat3:#3B82F6; /* ذكاء اصطناعي */
+  --cat4:#F59E0B; /* عمليات */
+  --cat5:#EC4899; /* تجربة المستخدم */
+  --cat6:#7C3AED; /* تقنية وبنية */
+}
+
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+
+body {
+  font-family:'Cairo',sans-serif;
+  background:var(--bg);
+  color:var(--tx);
+  min-height:100vh;
+}
+
+body::before {
+  content:'';position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse 120% 35% at 20% -5%, rgba(255,107,53,.06) 0%,transparent 55%),
+    radial-gradient(ellipse 80% 50% at 85% 105%, rgba(124,58,237,.05) 0%,transparent 55%),
+    radial-gradient(ellipse 60% 40% at 50% 50%, rgba(16,185,129,.02) 0%,transparent 60%);
+  pointer-events:none;z-index:0;
+}
+
+.wrap {position:relative;z-index:1;padding:20px 16px 64px;max-width:480px;margin:0 auto;}
+
+/* ── HERO ── */
+.hero {text-align:center;padding:36px 0 28px;}
+
+.hero-badge {
+  display:inline-flex;align-items:center;gap:7px;
+  background:rgba(255,107,53,.08);border:1px solid rgba(255,107,53,.25);
+  border-radius:100px;padding:5px 16px;font-size:9.5px;color:var(--a1);
+  letter-spacing:2px;text-transform:uppercase;margin-bottom:18px;
+}
+
+.hero h1 {font-size:1.85rem;font-weight:900;line-height:1.18;margin-bottom:8px;}
+.hero h1 em {font-style:normal;color:var(--a1);}
+.hero h1 b {color:var(--a2);}
+.hero-sub {color:var(--mu);font-size:.76rem;line-height:1.9;margin-bottom:22px;max-width:340px;margin-left:auto;margin-right:auto;}
+
+/* stats row */
+.hero-stats {display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px;}
+.hs {
+  background:var(--c1);border:1px solid var(--bd);border-radius:12px;
+  padding:11px 6px;text-align:center;
+}
+.hs-n {font-size:1.3rem;font-weight:900;line-height:1;}
+.hs-l {font-size:.58rem;color:var(--mu);margin-top:3px;}
+
+/* category filter pills */
+.filters {
+  display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:24px;
+}
+.pill {
+  padding:5px 13px;border-radius:100px;font-size:.65rem;font-weight:700;
+  cursor:pointer;border:1px solid;transition:all .25s;user-select:none;
+  letter-spacing:.3px;
+}
+.pill.active,.pill:hover {opacity:1 !important;}
+.pill-all  {background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.15);color:var(--tx);}
+.pill-all.active {background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);}
+.pill-c1 {background:rgba(255,107,53,.08);border-color:rgba(255,107,53,.3);color:var(--cat1);}
+.pill-c1.active{background:rgba(255,107,53,.18);border-color:rgba(255,107,53,.5);}
+.pill-c2 {background:rgba(16,185,129,.07);border-color:rgba(16,185,129,.25);color:var(--cat2);}
+.pill-c2.active{background:rgba(16,185,129,.17);border-color:rgba(16,185,129,.45);}
+.pill-c3 {background:rgba(59,130,246,.07);border-color:rgba(59,130,246,.25);color:var(--cat3);}
+.pill-c3.active{background:rgba(59,130,246,.17);border-color:rgba(59,130,246,.45);}
+.pill-c4 {background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.25);color:var(--cat4);}
+.pill-c4.active{background:rgba(245,158,11,.17);border-color:rgba(245,158,11,.45);}
+.pill-c5 {background:rgba(236,72,153,.07);border-color:rgba(236,72,153,.25);color:var(--cat5);}
+.pill-c5.active{background:rgba(236,72,153,.17);border-color:rgba(236,72,153,.45);}
+.pill-c6 {background:rgba(124,58,237,.08);border-color:rgba(124,58,237,.3);color:var(--cat6);}
+.pill-c6.active{background:rgba(124,58,237,.18);border-color:rgba(124,58,237,.5);}
+
+/* ── IDEAS LIST ── */
+.ideas {display:flex;flex-direction:column;gap:9px;}
+
+.idea {
+  background:var(--c1);border:1px solid var(--bd);border-radius:14px;
+  padding:14px 15px;display:flex;gap:12px;align-items:flex-start;
+  transition:transform .2s,border-color .2s,opacity .3s;cursor:default;
+}
+.idea:hover {transform:translateX(-3px);}
+.idea.hidden {display:none;}
+
+.idea-num {
+  font-family:'IBM Plex Mono',monospace;font-size:.68rem;font-weight:600;
+  min-width:24px;flex-shrink:0;margin-top:2px;opacity:.5;
+}
+
+.idea-body {flex:1;}
+.idea-top {display:flex;align-items:flex-start;gap:8px;margin-bottom:4px;flex-wrap:wrap;}
+.idea-title {font-size:.82rem;font-weight:800;flex:1;line-height:1.4;}
+.idea-desc {font-size:.71rem;color:rgba(237,233,254,.7);line-height:1.65;}
+
+/* category dot */
+.cat-dot {
+  width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:6px;
+}
+
+/* impact badge */
+.impact {
+  font-size:.58rem;padding:2px 8px;border-radius:100px;
+  font-weight:700;white-space:nowrap;flex-shrink:0;margin-top:1px;
+}
+.i-high {background:rgba(255,107,53,.15);color:var(--a1);}
+.i-med  {background:rgba(245,158,11,.13);color:var(--a4);}
+.i-low  {background:rgba(107,104,128,.2);color:var(--mu);}
+
+/* effort badge */
+.effort {
+  font-size:.57rem;padding:2px 8px;border-radius:100px;
+  font-weight:600;white-space:nowrap;flex-shrink:0;
+  background:rgba(255,255,255,.04);border:1px solid var(--bd);
+  color:var(--mu);margin-top:1px;
+}
+
+/* category label under title */
+.cat-label {
+  font-size:.6rem;font-weight:700;letter-spacing:.5px;
+  text-transform:uppercase;opacity:.75;margin-bottom:3px;
+}
+
+/* section header between groups */
+.group-head {
+  display:flex;align-items:center;gap:10px;
+  font-size:.72rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;
+  padding:6px 0 10px;margin-top:8px;
+  border-bottom:1px solid var(--bd);margin-bottom:4px;
+}
+.group-head .gh-line {flex:1;height:1px;background:var(--bd);}
+
+/* empty state */
+.empty {
+  text-align:center;padding:40px 20px;color:var(--mu);
+  font-size:.8rem;display:none;
+}
+
+/* counter */
+.counter {
+  text-align:center;font-size:.65rem;color:var(--mu);
+  margin-bottom:16px;font-family:'IBM Plex Mono',monospace;
+}
+.counter span {color:var(--a1);font-weight:700;}
+
+@keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.wrap>*{animation:up .4s ease both;}
+.hero{animation-delay:.05s}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">🛡️ SPARK Guard V2 — أفكار التطوير</div>
+  <h1><em>50</em> اقتراح<br>مفلتر و<b>منظم</b></h1>
+  <div class="hero-sub">أفكار مختارة لتطوير SPARK Guard — مرتبة حسب التأثير والجهد، مفلترة بالفئة</div>
+
+  <div class="hero-stats">
+    <div class="hs"><div class="hs-n" style="color:var(--cat1)">١٠</div><div class="hs-l">أمان وحماية</div></div>
+    <div class="hs"><div class="hs-n" style="color:var(--cat2)">١٠</div><div class="hs-l">مالية وربحية</div></div>
+    <div class="hs"><div class="hs-n" style="color:var(--cat3)">٨</div><div class="hs-l">ذكاء اصطناعي</div></div>
+    <div class="hs"><div class="hs-n" style="color:var(--cat4)">٩</div><div class="hs-l">عمليات</div></div>
+    <div class="hs"><div class="hs-n" style="color:var(--cat5)">٧</div><div class="hs-l">تجربة مستخدم</div></div>
+    <div class="hs"><div class="hs-n" style="color:var(--cat6)">٦</div><div class="hs-l">تقنية</div></div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filters">
+    <div class="pill pill-all active" onclick="filter('all')">الكل (50)</div>
+    <div class="pill pill-c1" onclick="filter('c1')">🛡 أمان</div>
+    <div class="pill pill-c2" onclick="filter('c2')">💰 مالية</div>
+    <div class="pill pill-c3" onclick="filter('c3')">🤖 AI</div>
+    <div class="pill pill-c4" onclick="filter('c4')">⚙️ عمليات</div>
+    <div class="pill pill-c5" onclick="filter('c5')">✨ UX</div>
+    <div class="pill pill-c6" onclick="filter('c6')">🔧 تقنية</div>
+  </div>
+
+  <div class="counter">عرض <span id="cnt">50</span> من 50 اقتراح</div>
+</div>
+
+<!-- IDEAS -->
+<div class="ideas" id="list">
+
+  <!-- ═══ أمان وحماية ═══ -->
+  <div class="group-head" data-cat="c1"><span style="color:var(--cat1)">🛡</span> أمان وحماية <div class="gh-line"></div></div>
+
+  <div class="idea" data-cat="c1">
+    <div class="idea-num">01</div>
+    <div class="cat-dot" style="background:var(--cat1)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat1)">أمان</div>
+      <div class="idea-top">
+        <div class="idea-title">بصمة إصبع للكاشير على كل عملية</div>
+        <span class="impact i-high">تأثير عالي</span>
+        <span class="effort">جهد متوسط</span>
+      </div>
+      <div class="idea-desc">كل فتح درج أو إلغاء أوردر مرتبط ببصمة الموظف — محدش يقدر ينكر عملية بعينها</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c1">
+    <div class="idea-num">02</div>
+    <div class="cat-dot" style="background:var(--cat1)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat1)">أمان</div>
+      <div class="idea-top">
+        <div class="idea-title">قفل الأوردر بعد 90 ثانية</div>
+        <span class="impact i-high">تأثير عالي</span>
+        <span class="effort">جهد منخفض</span>
+      </div>
+      <div class="idea-desc">بعد تسجيل الأوردر بـ 90 ثانية لا يمكن تعديله أو حذفه إلا بكود المالك مباشرة</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c1">
+    <div class="idea-num">03</div>
+    <div class="cat-dot" style="background:var(--cat1)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat1)">أمان</div>
+      <div class="idea-top">
+        <div class="idea-title">تقرير الفروقات التراكمية للموظف</div>
+        <span class="impact i-high">تأثير عالي</span>
+        <span class="effort">جهد منخفض</span>
+      </div>
+      <div class="idea-desc">كل موظف عنده سجل تراكمي للفروقات في شيفتاته — الأنماط بتظهر مع الوقت حتى لو كل فرق صغير</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c1">
+    <div class="idea-num">04</div>
+    <div class="cat-dot" style="background:var(--cat1)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat1)">أمان</div>
+      <div class="idea-top">
+        <div class="idea-title">نظام الشاهدين على الإلغاء</div>
+        <span class="impact i-high">تأثير عالي</span>
+        <span class="effort">جهد منخفض</span>
+      </div>
+      <div class="idea-desc">أي إلغاء أوردر محتاج موافقة موظفين مختلفين في نفس الوقت — مستحيل التنسيق على الغش</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c1">
+    <div class="idea-num">05</div>
+    <div class="cat-dot" style="background:var(--cat1)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat1)">أمان</div>
+      <div class="idea-top">
+        <div class="idea-title">مقارنة كاميرا × أوردر</div>
+        <span class="impact i-high">تأثير عالي</span>
+        <span class="effort">جهد عالي</span>
+      </div>
+      <div class="idea-desc">كل أوردر بيتسجل بالوقت بالثانية — تقدر ترجع فوراً للكاميرا في نفس اللحظة وتشوف اللي حصل</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c1">
+    <div class="idea-num">06</div>
+    <div class="cat-dot" style="background:var(--cat1)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat1)">أمان</div>
+      <div class="idea-top">
+        <div class="idea-title">تنبيه فوري لو الدرج اتفتح بدون أوردر</div>
+        <span class="impact i-high">تأثير عالي</span>
+        <span class="effort">جهد متوسط</span>
+      </div>
+      <div class="idea-desc">سنسور على درج الكاش — أي فتح بدون أوردر مسجل قبله = تنبيه فوري + لقطة من الكاميرا</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c1">
+    <div class="idea-num">07</div>
+    <div class="cat-dot" style="background:var(--cat1)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat1)">أمان</div>
+      <div class="idea-top">
+        <div class="idea-title">جرد مفاجئ بضغطة واحدة</div>
+        <span class="impact i-med">تأثير متوسط</span>
+        <span class="effort">جهد منخفض</span>
+      </div>
+      <div class="idea-desc">المالك من موبايله يطلب جرد فوري لأي خامة — النظام بيبعت إشعار لموظف المخزن يجرد دلوقتي</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c1">
+    <div class="idea-num">08</div>
+    <div class="cat-dot" style="background:var(--cat1)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat1)">أمان</div>
+      <div class="idea-top">
+        <div class="idea-title">خريطة حرارية للفروقات</div>
+        <span class="impact i-med">تأثير متوسط</span>
+        <span class="effort">جهد متوسط</span>
+      </div>
+      <div class="idea-desc">Heatmap بيوضح أكتر الأوقات والأيام اللي بيحصل فيها فروقات — بتحدد متى ومين بالضبط</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c1">
+    <div class="idea-num">09</div>
+    <div class="cat-dot" style="background:var(--cat1)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat1)">أمان</div>
+      <div class="idea-top">
+        <div class="idea-title">Audit Log كامل لكل حدث</div>
+        <span class="impact i-high">تأثير عالي</span>
+        <span class="effort">جهد منخفض</span>
+      </div>
+      <div class="idea-desc">سجل لا يمكن حذفه لكل عملية: من فعلها؟ امتى؟ من أي جهاز؟ — الأدلة دايماً موجودة</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c1">
+    <div class="idea-num">10</div>
+    <div class="cat-dot" style="background:var(--cat1)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat1)">أمان</div>
+      <div class="idea-top">
+        <div class="idea-title">نقاط الأمان الشهرية للموظف</div>
+        <span class="impact i-med">تأثير متوسط</span>
+        <span class="effort">جهد منخفض</span>
+      </div>
+      <div class="idea-desc">كل موظف بياخد score شهري — صفر فروقات = نقاط عالية ومكافأة. بيحفز النزاهة بشكل إيجابي</div>
+    </div>
+  </div>
+
+  <!-- ═══ مالية وربحية ═══ -->
+  <div class="group-head" data-cat="c2"><span style="color:var(--cat2)">💰</span> مالية وربحية <div class="gh-line"></div></div>
+
+  <div class="idea" data-cat="c2">
+    <div class="idea-num">11</div>
+    <div class="cat-dot" style="background:var(--cat2)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat2)">مالية</div>
+      <div class="idea-top">
+        <div class="idea-title">P&L يومي تلقائي (Profit & Loss)</div>
+        <span class="impact i-high">تأثير عالي</span>
+        <span class="effort">جهد متوسط</span>
+      </div>
+      <div class="idea-desc">كشف أرباح وخسائر يومي كامل: مبيعات − خامات − رواتب مقسمة باليوم − حصة المصاريف الثابتة</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c2">
+    <div class="idea-num">12</div>
+    <div class="cat-dot" style="background:var(--cat2)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat2)">مالية</div>
+      <div class="idea-top">
+        <div class="idea-title">نقطة التعادل اليومية (Break-Even)</div>
+        <span class="impact i-high">تأثير عالي</span>
+        <span class="effort">جهد منخفض</span>
+      </div>
+      <div class="idea-desc">النظام بيحسب لازم تبيع كام أوردر عشان تغطي مصاريف اليوم — ويبعت تنبيه لو وصلت أو فضلت بعيد</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c2">
+    <div class="idea-num">13</div>
+    <div class="cat-dot" style="background:var(--cat2)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat2)">مالية</div>
+      <div class="idea-top">
+        <div class="idea-title">تحليل الوقت الأكثر ربحاً</div>
+        <span class="impact i-high">تأثير عالي</span>
+        <span class="effort">جهد منخفض</span>
+      </div>
+      <div class="idea-desc">أي ساعة في اليوم وأي يوم في الأسبوع أعلى ربحية؟ بيساعدك تحدد ساعات الذروة وتزيد الطاقم فيها</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c2">
+    <div class="idea-num">14</div>
+    <div class="cat-dot" style="background:var(--cat2)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat2)">مالية</div>
+      <div class="idea-top">
+        <div class="idea-title">تكلفة الموظف لكل أوردر</div>
+        <span class="impact i-med">تأثير متوسط</span>
+        <span class="effort">جهد منخفض</span>
+      </div>
+      <div class="idea-desc">تقسيم تكلفة الرواتب على عدد الأوردرات — بتعرف تكلفة العمالة الحقيقية لكل صنف</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c2">
+    <div class="idea-num">15</div>
+    <div class="cat-dot" style="background:var(--cat2)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat2)">مالية</div>
+      <div class="idea-top">
+        <div class="idea-title">تحليل هدر الخامات مالياً</div>
+        <span class="impact i-high">تأثير عالي</span>
+        <span class="effort">جهد منخفض</span>
+      </div>
+      <div class="idea-desc">كل فرق في المخزون يتحول لقيمة مالية — بدل "ناقص 300 جرام" يقول "خسرت 45 جنيه"</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c2">
+    <div class="idea-num">16</div>
+    <div class="cat-dot" style="background:var(--cat2)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat2)">مالية</div>
+      <div class="idea-top">
+        <div class="idea-title">مقارنة الفروع مالياً</div>
+        <span class="impact i-high">تأثير عالي</span>
+        <span class="effort">جهد متوسط</span>
+      </div>
+      <div class="idea-desc">ROI لكل فرع بشكل مستقل — أي فرع أكتر كفاءة؟ وليه؟ مع تحليل الأسباب</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c2">
+    <div class="idea-num">17</div>
+    <div class="cat-dot" style="background:var(--cat2)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat2)">مالية</div>
+      <div class="idea-top">
+        <div class="idea-title">تتبع تغيرات أسعار الموردين</div>
+        <span class="impact i-med">تأثير متوسط</span>
+        <span class="effort">جهد منخفض</span>
+      </div>
+      <div class="idea-desc">كل ما تحدّث سعر خامة، النظام يحسب تلقائياً أثره على هامش ربح كل صنف وينبهك</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c2">
+    <div class="idea-num">18</div>
+    <div class="cat-dot" style="background:var(--cat2)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat2)">مالية</div>
+      <div class="idea-top">
+        <div class="idea-title">ميزانية شهرية مقابل الفعلي</div>
+        <span class="impact i-high">تأثير عالي</span>
+        <span class="effort">جهد متوسط</span>
+      </div>
+      <div class="idea-desc">تحدد ميزانية لكل بند مصاريف — النظام يتابع الصرف ويحذرك لو اقتربت من الحد</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c2">
+    <div class="idea-num">19</div>
+    <div class="cat-dot" style="background:var(--cat2)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat2)">مالية</div>
+      <div class="idea-top">
+        <div class="idea-title">صافي الربح لحظة بلحظة</div>
+        <span class="impact i-high">تأثير عالي</span>
+        <span class="effort">جهد منخفض</span>
+      </div>
+      <div class="idea-desc">رقم واحد في الداشبورد — "ربح اليوم حتى دلوقتي: ٢,٤٥٠ جنيه" — يتحدث مع كل أوردر</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c2">
+    <div class="idea-num">20</div>
+    <div class="cat-dot" style="background:var(--cat2)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat2)">مالية</div>
+      <div class="idea-top">
+        <div class="idea-title">تصدير للمحاسب (Excel/PDF)</div>
+        <span class="impact i-med">تأثير متوسط</span>
+        <span class="effort">جهد منخفض</span>
+      </div>
+      <div class="idea-desc">تصدير شهري بتنسيق محاسبي جاهز — بيوفر ساعات في المراجعة مع المحاسب</div>
+    </div>
+  </div>
+
+  <!-- ═══ ذكاء اصطناعي ═══ -->
+  <div class="group-head" data-cat="c3"><span style="color:var(--cat3)">🤖</span> ذكاء اصطناعي <div class="gh-line"></div></div>
+
+  <div class="idea" data-cat="c3">
+    <div class="idea-num">21</div>
+    <div class="cat-dot" style="background:var(--cat3)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat3)">AI</div>
+      <div class="idea-top">
+        <div class="idea-title">مساعد المطعم الذكي بالعربي</div>
+        <span class="impact i-high">تأثير عالي</span>
+        <span class="effort">جهد متوسط</span>
+      </div>
+      <div class="idea-desc">"إيه اللي حصل الأسبوع ده؟" / "قارنلي الفرعين" / "ليه الأرباح نازلة؟" — إجابات فورية بالعربي</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c3">
+    <div class="idea-num">22</div>
+    <div class="cat-dot" style="background:var(--cat3)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat3)">AI</div>
+      <div class="idea-top">
+        <div class="idea-title">توقع المبيعات للأسبوع الجاي</div>
+        <span class="impact i-high">تأثير عالي</span>
+        <span class="effort">جهد عالي</span>
+      </div>
+      <div class="idea-desc">AI يتنبأ بمبيعات الأسبوع بناءً على الإجازات والطقس والمواسم — بيساعدك تحضر الخامات صح</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c3">
+    <div class="idea-num">23</div>
+    <div class="cat-dot" style="background:var(--cat3)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat3)">AI</div>
+      <div class="idea-top">
+        <div class="idea-title">كشف شيف بيقصّر في الوصفة</div>
+        <span class="impact i-high">تأثير عالي</span>
+        <span class="effort">جهد متوسط</span>
+      </div>
+      <div class="idea-desc">AI بيلاحظ لو شيف معين بيستخدم خامات أقل من الوصفة باستمرار — بيأثر على جودة الطعام والعميل</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c3">
+    <div class="idea-num">24</div>
+    <div class="cat-dot" style="background:var(--cat3)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat3)">AI</div>
+      <div class="idea-top">
+        <div class="idea-title">اقتراح تعديل الوصفة لتوفير التكلفة</div>
+        <span class="impact i-med">تأثير متوسط</span>
+        <span class="effort">جهد عالي</span>
+      </div>
+      <div class="idea-desc">AI يقترح: "لو غيرت نسبة الأرز بـ 10% في الكشري هتوفر X جنيه شهرياً مع نفس الجودة"</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c3">
+    <div class="idea-num">25</div>
+    <div class="cat-dot" style="background:var(--cat3)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat3)">AI</div>
+      <div class="idea-top">
+        <div class="idea-title">تحليل أسباب الفروقات تلقائياً</div>
+        <span class="impact i-high">تأثير عالي</span>
+        <span class="effort">جهد عالي</span>
+      </div>
+      <div class="idea-desc">مش بس "في فرق" — لكن "الفرق ده محتمل يكون من الشيفت الثاني يوم الخميس بناءً على النمط"</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c3">
+    <div class="idea-num">26</div>
+    <div class="cat-dot" style="background:var(--cat3)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat3)">AI</div>
+      <div class="idea-top">
+        <div class="idea-title">ملخص صوتي يومي للمالك</div>
+        <span class="impact i-med">تأثير متوسط</span>
+        <span class="effort">جهد عالي</span>
+      </div>
+      <div class="idea-desc">رسالة صوتية بالعربي تتبعت للمالك كل يوم — ملخص 60 ثانية بأهم الأرقام والتنبيهات</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c3">
+    <div class="idea-num">27</div>
+    <div class="cat-dot" style="background:var(--cat3)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat3)">AI</div>
+      <div class="idea-top">
+        <div class="idea-title">توصيات تحسين المنيو</div>
+        <span class="impact i-med">تأثير متوسط</span>
+        <span class="effort">جهد متوسط</span>
+      </div>
+      <div class="idea-desc">"الكشري الصغير بيتباع أكتر من الكبير بس الكبير ربحيته أعلى — فكر في عرض ترقية بسعر مغري"</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c3">
+    <div class="idea-num">28</div>
+    <div class="cat-dot" style="background:var(--cat3)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat3)">AI</div>
+      <div class="idea-top">
+        <div class="idea-title">نظام إنذار مبكر للمصاريف الشاذة</div>
+        <span class="impact i-high">تأثير عالي</span>
+        <span class="effort">جهد متوسط</span>
+      </div>
+      <div class="idea-desc">AI بيتعلم المتوسط الطبيعي لكل مصروف — لو فاتورة الكهرباء ارتفعت 40% بيسألك: "عارف السبب؟"</div>
+    </div>
+  </div>
+
+  <!-- ═══ عمليات ═══ -->
+  <div class="group-head" data-cat="c4"><span style="color:var(--cat4)">⚙️</span> عمليات <div class="gh-line"></div></div>
+
+  <div class="idea" data-cat="c4">
+    <div class="idea-num">29</div>
+    <div class="cat-dot" style="background:var(--cat4)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat4)">عمليات</div>
+      <div class="idea-top">
+        <div class="idea-title">طلب الخامات التلقائي من المورد</div>
+        <span class="impact i-high">تأثير عالي</span>
+        <span class="effort">جهد متوسط</span>
+      </div>
+      <div class="idea-desc">لما الخامة توصل للحد الأدنى، النظام بيبعت واتساب للمورد بطلب الكمية المطلوبة تلقائياً</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c4">
+    <div class="idea-num">30</div>
+    <div class="cat-dot" style="background:var(--cat4)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat4)">عمليات</div>
+      <div class="idea-top">
+        <div class="idea-title">جدول الشيفتات الذكي</div>
+        <span class="impact i-high">تأثير عالي</span>
+        <span class="effort">جهد متوسط</span>
+      </div>
+      <div class="idea-desc">AI يقترح توزيع الشيفتات بناءً على أوقات الذروة التاريخية — تغطية أفضل بنفس عدد الموظفين</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c4">
+    <div class="idea-num">31</div>
+    <div class="cat-dot" style="background:var(--cat4)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat4)">عمليات</div>
+      <div class="idea-top">
+        <div class="idea-title">تحليل سرعة تنفيذ الأوردر</div>
+        <span class="impact i-med">تأثير متوسط</span>
+        <span class="effort">جهد منخفض</span>
+      </div>
+      <div class="idea-desc">متوسط وقت تنفيذ الأوردر لكل موظف وكل وقت — بتعرف فين الاختناق في العملية</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c4">
+    <div class="idea-num">32</div>
+    <div class="cat-dot" style="background:var(--cat4)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat4)">عمليات</div>
+      <div class="idea-top">
+        <div class="idea-title">إدارة انتهاء صلاحية الخامات</div>
+        <span class="impact i-high">تأثير عالي</span>
+        <span class="effort">جهد منخفض</span>
+      </div>
+      <div class="idea-desc">كل خامة عندها تاريخ انتهاء — تنبيه قبل 48 ساعة لتوجيه استخدامها في الأصناف الأكثر مبيعاً أولاً</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c4">
+    <div class="idea-num">33</div>
+    <div class="cat-dot" style="background:var(--cat4)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat4)">عمليات</div>
+      <div class="idea-top">
+        <div class="idea-title">مستوى هدر مقبول لكل صنف</div>
+        <span class="impact i-med">تأثير متوسط</span>
+        <span class="effort">جهد منخفض</span>
+      </div>
+      <div class="idea-desc">تحدد نسبة هدر مقبولة لكل خامة — النظام بيتجاهل الفروقات الطبيعية ويركز على الشاذ فقط</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c4">
+    <div class="idea-num">34</div>
+    <div class="cat-dot" style="background:var(--cat4)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat4)">عمليات</div>
+      <div class="idea-top">
+        <div class="idea-title">تقييم الموردين</div>
+        <span class="impact i-med">تأثير متوسط</span>
+        <span class="effort">جهد منخفض</span>
+      </div>
+      <div class="idea-desc">تسجيل جودة كل توريد — مورد بيوصل خامات ناقصة أو رديئة بيظهر في السجل ويأثر على توصيات الطلب</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c4">
+    <div class="idea-num">35</div>
+    <div class="cat-dot" style="background:var(--cat4)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat4)">عمليات</div>
+      <div class="idea-top">
+        <div class="idea-title">مصروف التوصيل والباقة</div>
+        <span class="impact i-med">تأثير متوسط</span>
+        <span class="effort">جهد منخفض</span>
+      </div>
+      <div class="idea-desc">تسجيل مصروف التوصيل للعميل وتكلفة التغليف كبند منفصل — بيحسب صح في ربحية أوردرات التوصيل</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c4">
+    <div class="idea-num">36</div>
+    <div class="cat-dot" style="background:var(--cat4)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat4)">عمليات</div>
+      <div class="idea-top">
+        <div class="idea-title">أوردرات العروض والخصومات</div>
+        <span class="impact i-med">تأثير متوسط</span>
+        <span class="effort">جهد منخفض</span>
+      </div>
+      <div class="idea-desc">تتبع أثر العروض على الربحية الحقيقية — هل العرض ده بيجيب أرباح أكتر ولا مجرد مبيعات؟</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c4">
+    <div class="idea-num">37</div>
+    <div class="cat-dot" style="background:var(--cat4)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat4)">عمليات</div>
+      <div class="idea-top">
+        <div class="idea-title">إعادة تسعير تلقائية مقترحة</div>
+        <span class="impact i-high">تأثير عالي</span>
+        <span class="effort">جهد منخفض</span>
+      </div>
+      <div class="idea-desc">لو تكلفة خامة ارتفعت والهامش نزل تحت حد معين، النظام يقترح سعر بيع جديد محسوب</div>
+    </div>
+  </div>
+
+  <!-- ═══ تجربة مستخدم ═══ -->
+  <div class="group-head" data-cat="c5"><span style="color:var(--cat5)">✨</span> تجربة المستخدم <div class="gh-line"></div></div>
+
+  <div class="idea" data-cat="c5">
+    <div class="idea-num">38</div>
+    <div class="cat-dot" style="background:var(--cat5)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat5)">UX</div>
+      <div class="idea-top">
+        <div class="idea-title">وضع الكيوسك للكاشير</div>
+        <span class="impact i-high">تأثير عالي</span>
+        <span class="effort">جهد منخفض</span>
+      </div>
+      <div class="idea-desc">واجهة مبسطة للغاية للكاشير — أزرار كبيرة، بدون تشتيت، مصممة للاستخدام السريع تحت ضغط</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c5">
+    <div class="idea-num">39</div>
+    <div class="cat-dot" style="background:var(--cat5)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat5)">UX</div>
+      <div class="idea-top">
+        <div class="idea-title">داشبورد المالك — وضع الليل</div>
+        <span class="impact i-low">تأثير منخفض</span>
+        <span class="effort">جهد منخفض</span>
+      </div>
+      <div class="idea-desc">نظرة سريعة قبل النوم — ٣ أرقام بس: مبيعات اليوم، الربح، وأي تنبيه مهم. بدون تفاصيل</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c5">
+    <div class="idea-num">40</div>
+    <div class="cat-dot" style="background:var(--cat5)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat5)">UX</div>
+      <div class="idea-top">
+        <div class="idea-title">إشعارات واتساب للمالك</div>
+        <span class="impact i-high">تأثير عالي</span>
+        <span class="effort">جهد متوسط</span>
+      </div>
+      <div class="idea-desc">بدل ما تفتح تطبيق — رسالة واتساب تلقائية بملخص اليوم وأي تنبيه عاجل مباشرة على موبايله</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c5">
+    <div class="idea-num">41</div>
+    <div class="cat-dot" style="background:var(--cat5)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat5)">UX</div>
+      <div class="idea-top">
+        <div class="idea-title">تدريب الموظف الجديد داخل النظام</div>
+        <span class="impact i-med">تأثير متوسط</span>
+        <span class="effort">جهد متوسط</span>
+      </div>
+      <div class="idea-desc">Interactive onboarding — الموظف الجديد بيتعلم شغله من خلال النظام نفسه مع خطوات موجهة</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c5">
+    <div class="idea-num">42</div>
+    <div class="cat-dot" style="background:var(--cat5)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat5)">UX</div>
+      <div class="idea-top">
+        <div class="idea-title">لوحة إنجازات للموظفين</div>
+        <span class="impact i-med">تأثير متوسط</span>
+        <span class="effort">جهد منخفض</span>
+      </div>
+      <div class="idea-desc">Gamification خفيف — "أفضل موظف هذا الشهر"، "٣٠ يوم بلا فروقات" — بيرفع الروح المعنوية</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c5">
+    <div class="idea-num">43</div>
+    <div class="cat-dot" style="background:var(--cat5)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat5)">UX</div>
+      <div class="idea-top">
+        <div class="idea-title">تقرير PDF قابل للتخصيص</div>
+        <span class="impact i-med">تأثير متوسط</span>
+        <span class="effort">جهد متوسط</span>
+      </div>
+      <div class="idea-desc">المالك يختار إيه اللي يظهر في التقرير — مش كل حاجة، بس اللي يحتاجه هو بالظبط</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c5">
+    <div class="idea-num">44</div>
+    <div class="cat-dot" style="background:var(--cat5)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat5)">UX</div>
+      <div class="idea-top">
+        <div class="idea-title">وضع المقارنة السريعة</div>
+        <span class="impact i-med">تأثير متوسط</span>
+        <span class="effort">جهد منخفض</span>
+      </div>
+      <div class="idea-desc">"هذا الأسبوع vs الأسبوع الماضي" — مقارنة بصرية سريعة بلون أخضر وأحمر بدون تحليل معقد</div>
+    </div>
+  </div>
+
+  <!-- ═══ تقنية وبنية ═══ -->
+  <div class="group-head" data-cat="c6"><span style="color:var(--cat6)">🔧</span> تقنية وبنية <div class="gh-line"></div></div>
+
+  <div class="idea" data-cat="c6">
+    <div class="idea-num">45</div>
+    <div class="cat-dot" style="background:var(--cat6)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat6)">تقنية</div>
+      <div class="idea-top">
+        <div class="idea-title">نسخ احتياطي تلقائي مشفر</div>
+        <span class="impact i-high">تأثير عالي</span>
+        <span class="effort">جهد منخفض</span>
+      </div>
+      <div class="idea-desc">Backup تلقائي كل ليلة على USB + سحابة — لو اللاب توب اتسرق أو اتعطل مفيش بيانات بتضيع</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c6">
+    <div class="idea-num">46</div>
+    <div class="cat-dot" style="background:var(--cat6)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat6)">تقنية</div>
+      <div class="idea-top">
+        <div class="idea-title">مراقبة صحة النظام</div>
+        <span class="impact i-high">تأثير عالي</span>
+        <span class="effort">جهد منخفض</span>
+      </div>
+      <div class="idea-desc">تنبيه للمالك لو اللاب توب اتقفل أو الخدمة وقفت — بيعرف في الحال لو في مشكلة تقنية</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c6">
+    <div class="idea-num">47</div>
+    <div class="cat-dot" style="background:var(--cat6)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat6)">تقنية</div>
+      <div class="idea-top">
+        <div class="idea-title">API داخلي للتكامل مع POS</div>
+        <span class="impact i-med">تأثير متوسط</span>
+        <span class="effort">جهد عالي</span>
+      </div>
+      <div class="idea-desc">لو عندك POS خارجي (Foodics مثلاً)، SPARK Guard يتربط معاه ويسحب الأوردرات تلقائياً</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c6">
+    <div class="idea-num">48</div>
+    <div class="cat-dot" style="background:var(--cat6)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat6)">تقنية</div>
+      <div class="idea-top">
+        <div class="idea-title">تشفير قاعدة البيانات المحلية</div>
+        <span class="impact i-high">تأثير عالي</span>
+        <span class="effort">جهد منخفض</span>
+      </div>
+      <div class="idea-desc">SQLite Encryption Extension — حتى لو حد وصل للاب توب مش هيقدر يقرأ البيانات بدون كلمة السر</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c6">
+    <div class="idea-num">49</div>
+    <div class="cat-dot" style="background:var(--cat6)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat6)">تقنية</div>
+      <div class="idea-top">
+        <div class="idea-title">تحديثات النظام التلقائية</div>
+        <span class="impact i-med">تأثير متوسط</span>
+        <span class="effort">جهد متوسط</span>
+      </div>
+      <div class="idea-desc">النظام بيتحدث نفسه تلقائياً في الخلفية لما يجي اتصال — مفيش حاجة يدوية من الفريق</div>
+    </div>
+  </div>
+
+  <div class="idea" data-cat="c6">
+    <div class="idea-num">50</div>
+    <div class="cat-dot" style="background:var(--cat6)"></div>
+    <div class="idea-body">
+      <div class="cat-label" style="color:var(--cat6)">تقنية</div>
+      <div class="idea-top">
+        <div class="idea-title">لوحة أداء النظام للمطور</div>
+        <span class="impact i-low">تأثير منخفض</span>
+        <span class="effort">جهد منخفض</span>
+      </div>
+      <div class="idea-desc">داشبورد مخفي للمطور — حجم قاعدة البيانات، سرعة الاستجابة، آخر Sync، أخطاء السيرفر</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="empty" id="empty">لا توجد اقتراحات في هذه الفئة</div>
+
+</div>
+
+<script>
+function filter(cat) {
+  // update pills
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  if(cat === 'all') document.querySelector('.pill-all').classList.add('active');
+  else document.querySelector('.pill-' + cat).classList.add('active');
+
+  // show/hide ideas
+  let count = 0;
+  document.querySelectorAll('.idea').forEach(el => {
+    const show = cat === 'all' || el.dataset.cat === cat;
+    el.classList.toggle('hidden', !show);
+    if(show) count++;
+  });
+
+  // show/hide group heads
+  document.querySelectorAll('.group-head').forEach(el => {
+    const show = cat === 'all' || el.dataset.cat === cat;
+    el.style.display = show ? '' : 'none';
+  });
+
+  document.getElementById('cnt').textContent = count;
+  document.getElementById('empty').style.display = count === 0 ? 'block' : 'none';
+}
+</script>
+</body>
+</html>
