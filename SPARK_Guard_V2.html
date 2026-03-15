@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>SPARK Guard V2 — Roadmap</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap');
+:root{--bg:#05050A;--c1:#111120;--c2:#181828;--a1:#FF6B35;--a2:#7C3AED;--a3:#10B981;--a4:#F59E0B;--a5:#3B82F6;--tx:#EDE9FE;--mu:#6B6880;--bd:rgba(255,255,255,0.07);}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;font-size:14px;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 100% 40% at 50% 0%,rgba(255,107,53,.08) 0%,transparent 60%),radial-gradient(ellipse 80% 50% at 100% 100%,rgba(124,58,237,.06) 0%,transparent 60%);pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;padding:20px 16px 60px;max-width:480px;margin:0 auto;}
+.hero{text-align:center;padding:32px 0 28px;}
+.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.3);border-radius:100px;padding:5px 14px;font-size:10px;color:var(--a1);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px;}
+.hero h1{font-size:2rem;font-weight:900;line-height:1.2;margin-bottom:10px;}
+.hero h1 em{font-style:normal;color:var(--a1);}
+.hero h1 b{color:var(--a2);}
+.hero p{color:var(--mu);font-size:.78rem;line-height:1.9;margin-bottom:24px;}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px;}
+.stats2{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.stat{background:var(--c1);border:1px solid var(--bd);border-radius:12px;padding:12px 8px;text-align:center;}
+.stat-n{font-size:1.2rem;font-weight:900;line-height:1;}
+.stat-l{font-size:.58rem;color:var(--mu);margin-top:3px;}
+.sec{margin-top:32px;}
+.sec-head{display:flex;align-items:center;gap:10px;font-size:.85rem;font-weight:800;padding-bottom:12px;border-bottom:1px solid var(--bd);margin-bottom:16px;}
+.ico{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.hl{border-radius:10px;padding:12px 14px;font-size:.75rem;line-height:1.8;display:flex;gap:10px;margin-bottom:12px;}
+.hl.orange{background:rgba(255,107,53,.08);border:1px solid rgba(255,107,53,.25);}
+.hl.green{background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.2);}
+.hl.purple{background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.25);}
+.hl.amber{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);}
+.hl.blue{background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.2);}
+.hl.red{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);}
+/* FEATURE CARDS */
+.feat-grid{display:grid;gap:10px;}
+.feat{background:var(--c1);border:1px solid var(--bd);border-radius:14px;overflow:hidden;}
+.feat-head{padding:14px 16px;display:flex;align-items:center;gap:12px;}
+.feat-icon{font-size:1.4rem;flex-shrink:0;}
+.feat-title{font-size:.88rem;font-weight:800;}
+.feat-sub{font-size:.65rem;color:var(--mu);margin-top:2px;}
+.feat-body{padding:0 16px 14px;}
+.feat-item{padding:7px 0;border-top:1px solid var(--bd);font-size:.74rem;color:rgba(237,233,254,.85);display:flex;gap:8px;line-height:1.6;align-items:flex-start;}
+.feat-item span{flex-shrink:0;}
+/* PHASE */
+.phase{border-radius:14px;overflow:hidden;margin-bottom:14px;}
+.phase-head{padding:16px;display:flex;align-items:center;gap:14px;}
+.phase-n{font-size:2rem;font-weight:900;font-family:'IBM Plex Mono',monospace;line-height:1;opacity:.9;}
+.phase-lbl{font-size:.6rem;letter-spacing:1.5px;text-transform:uppercase;opacity:.6;margin-bottom:2px;}
+.phase-title{font-size:.85rem;font-weight:800;line-height:1.3;}
+.phase-dur{font-size:.65rem;opacity:.6;margin-top:3px;}
+.tasks{background:var(--c1);border:1px solid var(--bd);border-top:none;}
+.task{padding:11px 14px;border-bottom:1px solid var(--bd);display:flex;flex-direction:column;gap:3px;}
+.task:last-child{border:none;}
+.task-top{display:flex;align-items:center;gap:8px;}
+.task-num{font-family:'IBM Plex Mono',monospace;font-size:.65rem;font-weight:600;flex-shrink:0;min-width:22px;}
+.task-name{font-size:.8rem;font-weight:700;flex:1;}
+.task-badge{font-size:.58rem;padding:3px 8px;border-radius:100px;font-weight:700;white-space:nowrap;flex-shrink:0;}
+.b-core{background:rgba(16,185,129,.15);color:var(--a3);}
+.b-high{background:rgba(255,107,53,.15);color:var(--a1);}
+.b-mid{background:rgba(245,158,11,.15);color:var(--a4);}
+.b-new{background:rgba(124,58,237,.15);color:#A78BFA;}
+.task-detail{font-size:.69rem;color:var(--mu);line-height:1.6;padding-right:30px;}
+/* NEW BADGE */
+.new-tag{display:inline-block;font-size:.55rem;padding:2px 6px;border-radius:4px;background:rgba(124,58,237,.25);color:#C4B5FD;font-weight:800;margin-right:4px;vertical-align:middle;}
+/* MILESTONES */
+.ms-list{display:grid;gap:8px;}
+.ms{background:var(--c1);border:1px solid var(--bd);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;}
+.ms-phase{font-size:.68rem;font-weight:800;font-family:'IBM Plex Mono',monospace;}
+.ms-text{font-size:.74rem;color:rgba(237,233,254,.85);line-height:1.6;}
+.ms-text::before{content:"✓  ";}
+/* GANTT */
+.gantt{background:var(--c1);border:1px solid var(--bd);border-radius:14px;overflow:hidden;}
+.gantt-head{display:grid;grid-template-columns:88px repeat(7,1fr);border-bottom:1px solid var(--bd);}
+.gh{padding:7px 3px;text-align:center;font-size:.52rem;font-weight:800;letter-spacing:.5px;color:var(--mu);border-right:1px solid var(--bd);}
+.gh:first-child{text-align:right;padding-right:8px;color:var(--tx);}
+.g-row{display:grid;grid-template-columns:88px repeat(7,1fr);border-bottom:1px solid var(--bd);}
+.g-row:last-child{border:none;}
+.g-lbl{padding:8px 6px 8px 8px;font-size:.63rem;font-weight:700;display:flex;align-items:center;}
+.g-cell{border-right:1px solid var(--bd);display:flex;align-items:center;justify-content:center;padding:5px 2px;}
+.g-bar{height:10px;border-radius:3px;width:85%;}
+/* COMPARE TABLE */
+.ctable{width:100%;border-collapse:collapse;border-radius:12px;overflow:hidden;}
+.ctable th{background:var(--c2);padding:8px 10px;font-size:.62rem;color:var(--mu);text-align:right;border-bottom:1px solid var(--bd);}
+.ctable td{padding:9px 10px;font-size:.72rem;border-bottom:1px solid var(--bd);text-align:right;}
+.ctable tr:last-child td{border:none;}
+.ok{color:var(--a3);font-weight:700;}
+.warn{color:var(--a4);font-weight:700;}
+.no{color:var(--mu);}
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.sec,.hero{animation:up .4s ease both;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="badge">🛡️ SPARK Guard V2 — مطعم SPARK</div>
+  <h1>النظام <em>الداخلي</em><br>الذكي لـ <b>SPARK</b></h1>
+  <p>نظام حماية متكامل خاص بمطعم SPARK — أوفلاين أول، متعدد الفروع، كاميرات مراقبة، ذكاء اصطناعي، وتقارير تلقائية</p>
+  <div class="stats">
+    <div class="stat"><div class="stat-n" style="color:var(--a1)">٧</div><div class="stat-l">مراحل</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--a2)">٢٤</div><div class="stat-l">أسبوع</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--a3)">٤٠+</div><div class="stat-l">مهمة</div></div>
+  </div>
+  <div class="stats2" style="margin-top:8px;">
+    <div class="stat"><div class="stat-n" style="color:var(--a4);font-size:.95rem;">Offline</div><div class="stat-l">أوفلاين أول</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--a5);font-size:.95rem;">Multi</div><div class="stat-l">متعدد الفروع</div></div>
+    <div class="stat"><div class="stat-n" style="color:#A78BFA;font-size:.95rem;">AI</div><div class="stat-l">ذكاء اصطناعي</div></div>
+  </div>
+</div>
+
+<!-- SCOPE -->
+<div class="sec">
+  <div class="sec-head"><div class="ico" style="background:rgba(255,107,53,.12)">🎯</div>نطاق المشروع</div>
+  <div class="hl orange">
+    <span>🏠</span>
+    <span><strong>خاص بمطعم SPARK:</strong> النظام ده مش SaaS — هو نظام داخلي احترافي لمطعم SPARK بكل فروعه. مصمم يكبر معاك من فرع واحد لأكتر.</span>
+  </div>
+  <div style="background:var(--c1);border:1px solid var(--bd);border-radius:12px;overflow:hidden;">
+    <table class="ctable">
+      <thead><tr><th>الميزة</th><th>متاح</th></tr></thead>
+      <tbody>
+        <tr><td>تعدد الفروع</td><td class="ok">✓ مدعوم</td></tr>
+        <tr><td>SaaS / بيع للغير</td><td class="no">— مش هدف حالياً</td></tr>
+        <tr><td>كاميرات مراقبة</td><td class="ok">✓ جديد</td></tr>
+        <tr><td>إدارة الموظفين والرواتب</td><td class="ok">✓ جديد</td></tr>
+        <tr><td>المصاريف الثابتة والمتغيرة</td><td class="ok">✓ جديد</td></tr>
+        <tr><td>تحليل ربحية تلقائي</td><td class="ok">✓ جديد</td></tr>
+        <tr><td>تقارير PDF يومي/أسبوعي/شهري</td><td class="ok">✓ جديد</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- NEW FEATURES -->
+<div class="sec">
+  <div class="sec-head"><div class="ico" style="background:rgba(124,58,237,.12)">✨</div>الإضافات الجديدة — V2</div>
+
+  <div class="feat-grid">
+
+    <!-- كاميرات -->
+    <div class="feat">
+      <div class="feat-head" style="background:rgba(239,68,68,.07);border-bottom:1px solid rgba(239,68,68,.15);">
+        <div class="feat-icon">📹</div>
+        <div><div class="feat-title" style="color:#F87171;">كاميرات المراقبة</div><div class="feat-sub">تسجيل + فيد مباشر في الداشبورد</div></div>
+      </div>
+      <div class="feat-body">
+        <div class="feat-item"><span>▸</span>عرض فيد مباشر من كل الكاميرات في الداشبورد</div>
+        <div class="feat-item"><span>▸</span>تسجيل مستمر محلياً على اللاب توب (Local Storage)</div>
+        <div class="feat-item"><span>▸</span>المالك يشوف الكاميرات من موبايله عن بُعد</div>
+        <div class="feat-item"><span>▸</span>ربط الكاميرات بالأوردرات — كل أوردر بيتسجل بالوقت والكاميرا</div>
+        <div class="feat-item"><span>▸</span>تنبيه لو في حركة في أوقات إغلاق المطعم</div>
+      </div>
+    </div>
+
+    <!-- موظفين ورواتب -->
+    <div class="feat">
+      <div class="feat-head" style="background:rgba(59,130,246,.07);border-bottom:1px solid rgba(59,130,246,.15);">
+        <div class="feat-icon">👥</div>
+        <div><div class="feat-title" style="color:#60A5FA;">الموظفين والرواتب</div><div class="feat-sub">إدارة كاملة للفريق</div></div>
+      </div>
+      <div class="feat-body">
+        <div class="feat-item"><span>▸</span>إضافة موظفين مع بيانات كاملة + الراتب الشهري</div>
+        <div class="feat-item"><span>▸</span>تسجيل حضور وغياب مرتبط بالشيفت</div>
+        <div class="feat-item"><span>▸</span>حساب الراتب الفعلي بعد الخصومات والمكافآت</div>
+        <div class="feat-item"><span>▸</span>إجمالي تكلفة الموظفين يدخل في حساب الربحية تلقائياً</div>
+        <div class="feat-item"><span>▸</span>تقرير رواتب شهري جاهز للمراجعة</div>
+      </div>
+    </div>
+
+    <!-- مصاريف -->
+    <div class="feat">
+      <div class="feat-head" style="background:rgba(245,158,11,.07);border-bottom:1px solid rgba(245,158,11,.15);">
+        <div class="feat-icon">💸</div>
+        <div><div class="feat-title" style="color:#FCD34D;">المصاريف الثابتة والمتغيرة</div><div class="feat-sub">AI يتعلم ويحسب المتوسط</div></div>
+      </div>
+      <div class="feat-body">
+        <div class="feat-item"><span>▸</span><strong>مصاريف ثابتة:</strong> إيجار، رواتب، اشتراكات — بتتحسب تلقائياً كل شهر</div>
+        <div class="feat-item"><span>▸</span><strong>مصاريف متغيرة يدوية:</strong> غاز، كهرباء، مياه، صيانة — بتدخلها لما تيجي</div>
+        <div class="feat-item"><span>▸</span>AI بيتعلم من السجل التاريخي ويحسب المتوسط الخاص بكل بند</div>
+        <div class="feat-item"><span>▸</span>توقع المصاريف الجاية بناءً على الأشهر السابقة</div>
+        <div class="feat-item"><span>▸</span>تنبيه لو مصروف معين أعلى من المعتاد بنسبة كبيرة</div>
+      </div>
+    </div>
+
+    <!-- ربحية -->
+    <div class="feat">
+      <div class="feat-head" style="background:rgba(16,185,129,.07);border-bottom:1px solid rgba(16,185,129,.15);">
+        <div class="feat-icon">📊</div>
+        <div><div class="feat-title" style="color:#34D399;">تحليل الربحية التلقائي</div><div class="feat-sub">صورة مالية كاملة في لحظة</div></div>
+      </div>
+      <div class="feat-body">
+        <div class="feat-item"><span>▸</span>ربحية كل صنف = سعر البيع − تكلفة الخامات − نصيبه من المصاريف</div>
+        <div class="feat-item"><span>▸</span>هامش الربح الإجمالي للمطعم يومياً وشهرياً</div>
+        <div class="feat-item"><span>▸</span>أكتر الأصناف ربحاً وأقلها — بالأرقام الحقيقية</div>
+        <div class="feat-item"><span>▸</span>مقارنة الأداء بين الفروع المختلفة</div>
+        <div class="feat-item"><span>▸</span>AI يقترح تعديلات على الأسعار أو الوصفات لتحسين الهامش</div>
+      </div>
+    </div>
+
+    <!-- تقارير PDF -->
+    <div class="feat">
+      <div class="feat-head" style="background:rgba(255,107,53,.07);border-bottom:1px solid rgba(255,107,53,.15);">
+        <div class="feat-icon">📄</div>
+        <div><div class="feat-title" style="color:#FB923C;">تقارير PDF التلقائية</div><div class="feat-sub">يومي + أسبوعي + شهري</div></div>
+      </div>
+      <div class="feat-body">
+        <div class="feat-item"><span>▸</span><strong>يومي (منتصف الليل):</strong> مبيعات + مخزون + فروقات + ملاحظات AI</div>
+        <div class="feat-item"><span>▸</span><strong>أسبوعي (الجمعة):</strong> مقارنة الأيام + أفضل وأسوأ يوم + توصيات</div>
+        <div class="feat-item"><span>▸</span><strong>شهري:</strong> ربحية كاملة + مصاريف + رواتب + تحليل AI شامل</div>
+        <div class="feat-item"><span>▸</span>يتبعت تلقائياً على موبايل المالك</div>
+        <div class="feat-item"><span>▸</span>إمكانية استخراج أي تقرير يدوياً في أي وقت</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- PHASES -->
+<div class="sec">
+  <div class="sec-head"><div class="ico" style="background:rgba(16,185,129,.12)">🗺️</div>مراحل التطوير</div>
+
+  <!-- Phase 1 -->
+  <div class="phase">
+    <div class="phase-head" style="background:rgba(27,42,74,.5);border:1px solid rgba(27,42,74,.9);border-bottom:none;border-radius:14px 14px 0 0;">
+      <div class="phase-n" style="color:#4A6FA5;">١</div>
+      <div><div class="phase-lbl">المرحلة الأولى</div><div class="phase-title" style="color:#7BA7D4;">الأساس — وصفات + مخزن + كاشير</div><div class="phase-dur">⏱ 4 أسابيع · أ.١–٤</div></div>
+    </div>
+    <div class="tasks" style="border-radius:0 0 14px 14px;">
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#4A6FA5;">01</span><span class="task-name">Local Server + SQLite</span><span class="task-badge b-core">أساسي</span></div><div class="task-detail">Node.js + Express + SQLite — يشتغل أوفلاين 100%</div></div>
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#4A6FA5;">02</span><span class="task-name">Recipe Engine</span><span class="task-badge b-core">أساسي</span></div><div class="task-detail">كل صنف بخاماته وكمياتها بالجرام + نسبة الهدر</div></div>
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#4A6FA5;">03</span><span class="task-name">شاشة الكاشير (POS)</span><span class="task-badge b-high">عالي</span></div><div class="task-detail">تسجيل الأوردرات + خصم الخامات تلقائياً</div></div>
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#4A6FA5;">04</span><span class="task-name">وحدة المخزن</span><span class="task-badge b-high">عالي</span></div><div class="task-detail">رصيد افتتاحي + جرد يدوي + مقارنة بالنظري</div></div>
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#4A6FA5;">05</span><span class="task-name">نظام الصلاحيات</span><span class="task-badge b-mid">متوسط</span></div><div class="task-detail">كاشير / مخزن / مدير / مالك — كل دور معزول</div></div>
+    </div>
+  </div>
+
+  <!-- Phase 2 -->
+  <div class="phase">
+    <div class="phase-head" style="background:rgba(192,57,43,.18);border:1px solid rgba(192,57,43,.45);border-bottom:none;border-radius:14px 14px 0 0;">
+      <div class="phase-n" style="color:#E57373;">٢</div>
+      <div><div class="phase-lbl">المرحلة الثانية</div><div class="phase-title" style="color:#EF9A9A;">التزامن + داشبورد المالك + الفروع</div><div class="phase-dur">⏱ 3 أسابيع · أ.٥–٧</div></div>
+    </div>
+    <div class="tasks" style="border-radius:0 0 14px 14px;">
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#E57373;">06</span><span class="task-name">Cloud Sync (Firebase/Supabase)</span><span class="task-badge b-core">أساسي</span></div><div class="task-detail">مزامنة تلقائية لما النت يرجع</div></div>
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#E57373;">07</span><span class="task-name">داشبورد المالك</span><span class="task-badge b-high">عالي</span></div><div class="task-detail">ملخص لحظي من أي مكان على الموبايل</div></div>
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#E57373;">08</span><span class="task-name"><span class="new-tag">جديد</span>دعم تعدد الفروع</span><span class="task-badge b-high">عالي</span></div><div class="task-detail">كل فرع له بياناته + داشبورد موحد للمالك يقارن الفروع</div></div>
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#E57373;">09</span><span class="task-name">Hotspot Sync</span><span class="task-badge b-mid">متوسط</span></div><div class="task-detail">سينك عبر موبايل المالك لو النت مقطوع كلياً</div></div>
+    </div>
+  </div>
+
+  <!-- Phase 3 -->
+  <div class="phase">
+    <div class="phase-head" style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.4);border-bottom:none;border-radius:14px 14px 0 0;">
+      <div class="phase-n" style="color:#F87171;">٣</div>
+      <div><div class="phase-lbl">المرحلة الثالثة <span class="new-tag">جديد</span></div><div class="phase-title" style="color:#FCA5A5;">كاميرات المراقبة</div><div class="phase-dur">⏱ 3 أسابيع · أ.٨–١٠</div></div>
+    </div>
+    <div class="tasks" style="border-radius:0 0 14px 14px;">
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#F87171;">10</span><span class="task-name">RTSP Stream Integration</span><span class="task-badge b-core">أساسي</span></div><div class="task-detail">ربط كاميرات IP بالنظام — عرض فيد مباشر في الداشبورد</div></div>
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#F87171;">11</span><span class="task-name">Local Recording</span><span class="task-badge b-high">عالي</span></div><div class="task-detail">تسجيل مستمر محلياً مع إدارة مساحة التخزين</div></div>
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#F87171;">12</span><span class="task-name">Remote View للمالك</span><span class="task-badge b-high">عالي</span></div><div class="task-detail">المالك يشوف الكاميرات من موبايله في أي مكان</div></div>
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#F87171;">13</span><span class="task-name">ربط الأوردرات بالكاميرات</span><span class="task-badge b-high">عالي</span></div><div class="task-detail">كل أوردر بيتسجل بالوقت — تقدر ترجعله في الكاميرا</div></div>
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#F87171;">14</span><span class="task-name">Motion Alert</span><span class="task-badge b-mid">متوسط</span></div><div class="task-detail">تنبيه لو في حركة بعد إغلاق المطعم</div></div>
+    </div>
+  </div>
+
+  <!-- Phase 4 -->
+  <div class="phase">
+    <div class="phase-head" style="background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.35);border-bottom:none;border-radius:14px 14px 0 0;">
+      <div class="phase-n" style="color:#60A5FA;">٤</div>
+      <div><div class="phase-lbl">المرحلة الرابعة <span class="new-tag">جديد</span></div><div class="phase-title" style="color:#93C5FD;">الموظفين + الرواتب + المصاريف</div><div class="phase-dur">⏱ 3 أسابيع · أ.١١–١٣</div></div>
+    </div>
+    <div class="tasks" style="border-radius:0 0 14px 14px;">
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#60A5FA;">15</span><span class="task-name">إدارة الموظفين</span><span class="task-badge b-core">أساسي</span></div><div class="task-detail">بيانات كاملة + راتب + دور + فرع + حضور وغياب</div></div>
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#60A5FA;">16</span><span class="task-name">نظام الرواتب</span><span class="task-badge b-high">عالي</span></div><div class="task-detail">حساب تلقائي شهري + خصومات + مكافآت + تقرير جاهز</div></div>
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#60A5FA;">17</span><span class="task-name">المصاريف الثابتة</span><span class="task-badge b-high">عالي</span></div><div class="task-detail">إيجار + اشتراكات + كل ما هو ثابت كل شهر</div></div>
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#60A5FA;">18</span><span class="task-name">المصاريف المتغيرة (يدوي + AI)</span><span class="task-badge b-high">عالي</span></div><div class="task-detail">غاز + كهرباء + مياه + صيانة — AI يحسب المتوسط مع الوقت</div></div>
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#60A5FA;">19</span><span class="task-name">توقع المصاريف المتغيرة</span><span class="task-badge b-mid">متوسط</span></div><div class="task-detail">AI يتنبأ بالشهر الجاي بناءً على سجل ٣–٦ أشهر سابقة</div></div>
+    </div>
+  </div>
+
+  <!-- Phase 5 -->
+  <div class="phase">
+    <div class="phase-head" style="background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.35);border-bottom:none;border-radius:14px 14px 0 0;">
+      <div class="phase-n" style="color:#34D399;">٥</div>
+      <div><div class="phase-lbl">المرحلة الخامسة <span class="new-tag">جديد</span></div><div class="phase-title" style="color:#6EE7B7;">تحليل الربحية التلقائي</div><div class="phase-dur">⏱ 2 أسبوع · أ.١٤–١٥</div></div>
+    </div>
+    <div class="tasks" style="border-radius:0 0 14px 14px;">
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#34D399;">20</span><span class="task-name">Profitability Engine</span><span class="task-badge b-core">أساسي</span></div><div class="task-detail">مبيعات − خامات − رواتب − مصاريف = ربح حقيقي</div></div>
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#34D399;">21</span><span class="task-name">ربحية كل صنف</span><span class="task-badge b-high">عالي</span></div><div class="task-detail">هامش ربح كل صنف تلقائياً مع نصيبه من المصاريف</div></div>
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#34D399;">22</span><span class="task-name">مقارنة الفروع</span><span class="task-badge b-high">عالي</span></div><div class="task-detail">أي فرع أكتر ربحاً؟ وليه؟ — تحليل AI مفصل</div></div>
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#34D399;">23</span><span class="task-name">AI توصيات التسعير</span><span class="task-badge b-mid">متوسط</span></div><div class="task-detail">يقترح رفع / خفض أسعار أو تعديل وصفات لتحسين الهامش</div></div>
+    </div>
+  </div>
+
+  <!-- Phase 6 -->
+  <div class="phase">
+    <div class="phase-head" style="background:rgba(230,126,34,.12);border:1px solid rgba(230,126,34,.4);border-bottom:none;border-radius:14px 14px 0 0;">
+      <div class="phase-n" style="color:#FFB74D;">٦</div>
+      <div><div class="phase-lbl">المرحلة السادسة</div><div class="phase-title" style="color:#FFCC80;">الذكاء الاصطناعي + التقارير PDF</div><div class="phase-dur">⏱ 3 أسابيع · أ.١٦–١٨</div></div>
+    </div>
+    <div class="tasks" style="border-radius:0 0 14px 14px;">
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#FFB74D;">24</span><span class="task-name">Claude API — المساعد الذكي</span><span class="task-badge b-high">عالي</span></div><div class="task-detail">"إيه اللي حصل النهارده؟" — ملخص بالعربي فوراً</div></div>
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#FFB74D;">25</span><span class="task-name">تقرير يومي PDF تلقائي</span><span class="task-badge b-core">أساسي</span></div><div class="task-detail">منتصف الليل — مبيعات + مخزون + فروقات + AI insights</div></div>
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#FFB74D;">26</span><span class="task-name">تقرير أسبوعي PDF</span><span class="task-badge b-high">عالي</span></div><div class="task-detail">الجمعة — مقارنة الأيام + أفضل وأسوأ يوم + توصيات</div></div>
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#FFB74D;">27</span><span class="task-name">تقرير شهري PDF</span><span class="task-badge b-high">عالي</span></div><div class="task-detail">ربحية كاملة + مصاريف + رواتب + تحليل شامل</div></div>
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#FFB74D;">28</span><span class="task-name">Push Notifications + كشف السرقة</span><span class="task-badge b-high">عالي</span></div><div class="task-detail">تنبيهات فورية لأي فرق مشبوه في الخامات أو الكاش</div></div>
+    </div>
+  </div>
+
+  <!-- Phase 7 -->
+  <div class="phase">
+    <div class="phase-head" style="background:rgba(142,68,173,.15);border:1px solid rgba(142,68,173,.4);border-bottom:none;border-radius:14px 14px 0 0;">
+      <div class="phase-n" style="color:#CE93D8;">٧</div>
+      <div><div class="phase-lbl">المرحلة السابعة</div><div class="phase-title" style="color:#E1BEE7;">الصقل + الاختبار + الإطلاق</div><div class="phase-dur">⏱ 3 أسابيع · أ.١٩–٢٤ (اختبار موسّع)</div></div>
+    </div>
+    <div class="tasks" style="border-radius:0 0 14px 14px;">
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#CE93D8;">29</span><span class="task-name">اختبار سيناريوهات السرقة</span><span class="task-badge b-high">عالي</span></div><div class="task-detail">محاكاة كل طرق التلاعب المعروفة والتأكد من الكشف</div></div>
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#CE93D8;">30</span><span class="task-name">اختبار الكاميرات والتسجيل</span><span class="task-badge b-high">عالي</span></div><div class="task-detail">التأكد من استمرارية التسجيل وجودة الفيد المباشر</div></div>
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#CE93D8;">31</span><span class="task-name">ضبط دقة التقارير المالية</span><span class="task-badge b-high">عالي</span></div><div class="task-detail">مطابقة الأرقام مع الواقع — صفر هامش خطأ في الحسابات</div></div>
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#CE93D8;">32</span><span class="task-name">تحسين الأداء الأوفلاين</span><span class="task-badge b-mid">متوسط</span></div><div class="task-detail">سرعة استجابة أقل من 200ms مع شهور من البيانات</div></div>
+      <div class="task"><div class="task-top"><span class="task-num" style="color:#CE93D8;">33</span><span class="task-name">تدريب الفريق + إطلاق فرع ١</span><span class="task-badge b-core">أساسي</span></div><div class="task-detail">تدريب كل موظف على دوره في النظام</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MILESTONES -->
+<div class="sec">
+  <div class="sec-head"><div class="ico" style="background:rgba(16,185,129,.12)">🏁</div>المعالم الرئيسية</div>
+  <div class="ms-list">
+    <div class="ms" style="border-right:3px solid #4A6FA5;"><div class="ms-phase" style="color:#4A6FA5;">م١ — أسبوع ٤</div><div class="ms-text">الكاشير + المخزن + الخصم التلقائي شغالين أوفلاين</div></div>
+    <div class="ms" style="border-right:3px solid #E57373;"><div class="ms-phase" style="color:#E57373;">م٢ — أسبوع ٧</div><div class="ms-text">المالك يتابع كل الفروع لحظة بلحظة من موبايله</div></div>
+    <div class="ms" style="border-right:3px solid #F87171;"><div class="ms-phase" style="color:#F87171;">م٣ — أسبوع ١٠</div><div class="ms-text">الكاميرات شغالة — فيد مباشر + تسجيل + ربط بالأوردرات</div></div>
+    <div class="ms" style="border-right:3px solid #60A5FA;"><div class="ms-phase" style="color:#60A5FA;">م٤ — أسبوع ١٣</div><div class="ms-text">الرواتب والمصاريف داخلة في الحسابات تلقائياً</div></div>
+    <div class="ms" style="border-right:3px solid #34D399;"><div class="ms-phase" style="color:#34D399;">م٥ — أسبوع ١٥</div><div class="ms-text">ربحية حقيقية شاملة لكل صنف وكل فرع</div></div>
+    <div class="ms" style="border-right:3px solid #FFB74D;"><div class="ms-phase" style="color:#FFB74D;">م٦ — أسبوع ١٨</div><div class="ms-text">التقارير PDF تلقائية يومياً وأسبوعياً وشهرياً</div></div>
+    <div class="ms" style="border-right:3px solid #CE93D8;"><div class="ms-phase" style="color:#CE93D8;">م٧ — أسبوع ٢٤</div><div class="ms-text">النظام كامل شغال في SPARK — صفر ورق، صفر عشوائية</div></div>
+  </div>
+</div>
+
+<!-- GANTT -->
+<div class="sec">
+  <div class="sec-head"><div class="ico" style="background:rgba(245,158,11,.12)">📅</div>الجدول الزمني — ٢٤ أسبوع</div>
+  <div class="gantt">
+    <div class="gantt-head">
+      <div class="gh">المرحلة</div>
+      <div class="gh">١–٤</div>
+      <div class="gh">٥–٧</div>
+      <div class="gh">٨–١٠</div>
+      <div class="gh">١١–١٣</div>
+      <div class="gh">١٤–١٥</div>
+      <div class="gh">١٦–١٨</div>
+      <div class="gh">١٩–٢٤</div>
+    </div>
+    <div class="g-row"><div class="g-lbl" style="color:#7BA7D4;">١ الأساس</div><div class="g-cell"><div class="g-bar" style="background:linear-gradient(90deg,#1B2A4A,#4A6FA5);"></div></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div></div>
+    <div class="g-row"><div class="g-lbl" style="color:#EF9A9A;">٢ التزامن</div><div class="g-cell"></div><div class="g-cell"><div class="g-bar" style="background:linear-gradient(90deg,#C0392B,#E57373);"></div></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div></div>
+    <div class="g-row"><div class="g-lbl" style="color:#FCA5A5;">٣ كاميرات</div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"><div class="g-bar" style="background:linear-gradient(90deg,#DC2626,#F87171);"></div></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div></div>
+    <div class="g-row"><div class="g-lbl" style="color:#93C5FD;">٤ موظفين</div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"><div class="g-bar" style="background:linear-gradient(90deg,#2563EB,#60A5FA);"></div></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div></div>
+    <div class="g-row"><div class="g-lbl" style="color:#6EE7B7;">٥ ربحية</div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"><div class="g-bar" style="background:linear-gradient(90deg,#059669,#34D399);"></div></div><div class="g-cell"></div><div class="g-cell"></div></div>
+    <div class="g-row"><div class="g-lbl" style="color:#FFCC80;">٦ AI+PDF</div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"><div class="g-bar" style="background:linear-gradient(90deg,#D97706,#FFB74D);"></div></div><div class="g-cell"></div></div>
+    <div class="g-row"><div class="g-lbl" style="color:#E1BEE7;">٧ إطلاق</div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"><div class="g-bar" style="background:linear-gradient(90deg,#7C3AED,#CE93D8);"></div></div></div>
+  </div>
+
+  <div class="hl green" style="margin-top:12px;">
+    <span>🎯</span>
+    <span><strong>الهدف النهائي:</strong> بعد ٢٤ أسبوع — مطعم SPARK بيشتغل بصفر ورق، صفر تخمين، وصفر سرقة. كل قرار بناءً على بيانات حقيقية.</span>
+  </div>
+</div>
+
+</div>
+</body>
+</html>
