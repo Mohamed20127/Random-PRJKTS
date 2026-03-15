@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>SPARK Guard — خطة التنفيذ</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap');
+:root{
+  --bg:#05050A;--c1:#0E0E1C;--c2:#141424;
+  --a1:#FF6B35;--a2:#7C3AED;--a3:#10B981;--a4:#F59E0B;--a5:#3B82F6;--a6:#EC4899;
+  --tx:#EDE9FE;--mu:#6B6880;--bd:rgba(255,255,255,0.06);
+  --ga:#1B2A4A;--gb:#C0392B;--gc:#27AE60;--gd:#E67E22;--ge:#8E44AD;--gf:#16A085;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse 100% 40% at 15% -5%,rgba(27,42,74,.12) 0%,transparent 55%),
+  radial-gradient(ellipse 80% 50% at 90% 110%,rgba(16,185,129,.05) 0%,transparent 55%);
+  pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;padding:20px 16px 64px;max-width:480px;margin:0 auto;}
+
+/* HERO */
+.hero{text-align:center;padding:32px 0 24px;}
+.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,107,53,.08);border:1px solid rgba(255,107,53,.25);border-radius:100px;padding:5px 14px;font-size:9.5px;color:var(--a1);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;}
+.hero h1{font-size:1.75rem;font-weight:900;line-height:1.2;margin-bottom:8px;}
+.hero h1 em{font-style:normal;color:var(--a1);}
+.hero h1 b{color:var(--a3);}
+.hero-sub{color:var(--mu);font-size:.76rem;line-height:1.9;margin-bottom:20px;}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px;}
+.stats2{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.stat{background:var(--c1);border:1px solid var(--bd);border-radius:12px;padding:11px 6px;text-align:center;}
+.stat-n{font-size:1.2rem;font-weight:900;line-height:1;}
+.stat-l{font-size:.58rem;color:var(--mu);margin-top:3px;}
+
+/* PROGRESS TRACKER */
+.tracker{background:var(--c1);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:20px;}
+.tracker-title{font-size:.68rem;font-weight:700;color:var(--mu);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;}
+.tracker-bar-wrap{background:rgba(255,255,255,.04);border-radius:100px;height:8px;margin-bottom:8px;overflow:hidden;}
+.tracker-bar{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--a1),var(--a3));transition:width .5s ease;width:0%;}
+.tracker-groups{display:flex;gap:4px;flex-wrap:wrap;}
+.tg{font-size:.58rem;padding:2px 8px;border-radius:100px;font-weight:700;cursor:pointer;border:1px solid;transition:all .2s;}
+.tg.done{opacity:.4;}
+
+/* SEC */
+.sec{margin-top:24px;}
+.sec-head{display:flex;align-items:center;gap:10px;font-size:.82rem;font-weight:800;padding-bottom:11px;border-bottom:1px solid var(--bd);margin-bottom:14px;}
+.ico{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+
+/* HL */
+.hl{border-radius:10px;padding:11px 13px;font-size:.74rem;line-height:1.8;display:flex;gap:9px;margin-bottom:10px;}
+.hl.green{background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.2);}
+.hl.orange{background:rgba(255,107,53,.07);border:1px solid rgba(255,107,53,.22);}
+.hl.blue{background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.22);}
+.hl.amber{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);}
+.hl.purple{background:rgba(124,58,237,.07);border:1px solid rgba(124,58,237,.22);}
+
+/* GROUP */
+.group{border-radius:14px;overflow:hidden;margin-bottom:14px;}
+.group-head{padding:15px 16px;display:flex;align-items:center;gap:13px;cursor:pointer;user-select:none;}
+.group-letter{font-size:1.6rem;font-weight:900;font-family:'IBM Plex Mono',monospace;line-height:1;opacity:.9;flex-shrink:0;}
+.group-info{flex:1;}
+.group-name{font-size:.88rem;font-weight:800;line-height:1.3;}
+.group-meta{font-size:.63rem;opacity:.65;margin-top:3px;display:flex;gap:10px;}
+.group-arrow{font-size:.85rem;color:rgba(255,255,255,.3);transition:transform .25s;flex-shrink:0;}
+.group.open .group-arrow{transform:rotate(90deg);}
+.group-progress{font-size:.62rem;font-family:'IBM Plex Mono',monospace;font-weight:600;opacity:.7;flex-shrink:0;}
+
+/* FEATURES LIST */
+.features{background:var(--c1);border:1px solid var(--bd);border-top:none;border-radius:0 0 14px 14px;display:none;}
+.group.open .features{display:block;}
+.feat{padding:12px 14px;border-bottom:1px solid var(--bd);display:flex;gap:10px;align-items:flex-start;cursor:pointer;transition:background .2s;}
+.feat:last-child{border:none;}
+.feat:hover{background:rgba(255,255,255,.02);}
+.feat.done{opacity:.5;}
+.feat.done .feat-title{text-decoration:line-through;}
+.feat-check{width:20px;height:20px;border-radius:6px;border:2px solid var(--bd);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;transition:all .2s;font-size:.65rem;}
+.feat.done .feat-check{background:rgba(16,185,129,.2);border-color:var(--a3);color:var(--a3);}
+.feat-body{flex:1;}
+.feat-top{display:flex;align-items:flex-start;gap:7px;margin-bottom:3px;flex-wrap:wrap;}
+.feat-num{font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--mu);flex-shrink:0;margin-top:2px;}
+.feat-title{font-size:.8rem;font-weight:700;flex:1;line-height:1.4;}
+.feat-desc{font-size:.69rem;color:var(--mu);line-height:1.6;padding-right:4px;}
+.feat-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;}
+.ftag{font-size:.58rem;padding:2px 7px;border-radius:4px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.ftag-dep{background:rgba(245,158,11,.12);color:var(--a4);}
+.ftag-new{background:rgba(16,185,129,.12);color:var(--a3);}
+.ftag-edit{background:rgba(59,130,246,.12);color:var(--a5);}
+.ftag-ai{background:rgba(124,58,237,.12);color:#C4B5FD;}
+.ftag-time{background:rgba(255,255,255,.06);color:var(--mu);}
+
+/* IMPACT */
+.impact{font-size:.58rem;padding:2px 7px;border-radius:100px;font-weight:700;white-space:nowrap;flex-shrink:0;}
+.i-max{background:rgba(239,68,68,.15);color:#F87171;}
+.i-high{background:rgba(255,107,53,.15);color:var(--a1);}
+.i-med{background:rgba(245,158,11,.13);color:var(--a4);}
+
+/* DEPENDENCY CHART */
+.dep-chart{background:var(--c1);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:14px;}
+.dep-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:.7rem;}
+.dep-row:last-child{margin:0;}
+.dep-node{padding:4px 10px;border-radius:6px;font-weight:700;font-size:.65rem;font-family:'IBM Plex Mono',monospace;white-space:nowrap;}
+.dep-arrow{color:var(--mu);font-size:.75rem;flex-shrink:0;}
+.dep-label{color:var(--mu);font-size:.62rem;}
+
+/* TIMELINE */
+.timeline{display:grid;gap:8px;}
+.tl-week{background:var(--c1);border:1px solid var(--bd);border-radius:12px;padding:12px 14px;display:grid;grid-template-columns:72px 1fr;gap:10px;align-items:center;}
+.tl-num{font-family:'IBM Plex Mono',monospace;font-size:.65rem;font-weight:700;color:var(--mu);}
+.tl-content{}
+.tl-title{font-size:.78rem;font-weight:700;margin-bottom:3px;}
+.tl-tasks{font-size:.67rem;color:var(--mu);line-height:1.6;}
+
+@keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.sec,.hero,.tracker{animation:up .4s ease both;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="badge">🛡️ SPARK Guard — خطة التنفيذ</div>
+  <h1>تنفيذ <em>38</em> feature<br>بشكل <b>منظم</b></h1>
+  <div class="hero-sub">مرتبة حسب الاعتماديات — كل مجموعة بتبني على اللي قبلها</div>
+  <div class="stats">
+    <div class="stat"><div class="stat-n" style="color:var(--a1)">6</div><div class="stat-l">مجموعات</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--a3)">38</div><div class="stat-l">feature</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--a4)">18</div><div class="stat-l">أسبوع</div></div>
+  </div>
+  <div class="stats2" style="margin-top:8px;">
+    <div class="stat"><div class="stat-n" style="color:#F87171;font-size:.9rem;">Firebase</div><div class="stat-l">المحور</div></div>
+    <div class="stat"><div class="stat-n" style="color:#C4B5FD;font-size:.9rem;">AI</div><div class="stat-l">مدمج</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--a3);font-size:.9rem;">Offline</div><div class="stat-l">أول</div></div>
+  </div>
+</div>
+
+<!-- PROGRESS TRACKER -->
+<div class="tracker">
+  <div class="tracker-title">
+    <span>التقدم الكلي</span>
+    <span id="prog-text" style="color:var(--a1);font-family:'IBM Plex Mono',monospace;">0 / 38</span>
+  </div>
+  <div class="tracker-bar-wrap"><div class="tracker-bar" id="prog-bar"></div></div>
+  <div class="tracker-groups">
+    <span class="tg" style="background:rgba(27,42,74,.3);border-color:rgba(75,111,165,.4);color:#7BA7D4;" id="tg-a">أ: 0/7</span>
+    <span class="tg" style="background:rgba(192,57,43,.15);border-color:rgba(192,57,43,.4);color:#EF9A9A;" id="tg-b">ب: 0/6</span>
+    <span class="tg" style="background:rgba(39,174,96,.1);border-color:rgba(39,174,96,.35);color:#6EE7B7;" id="tg-c">ج: 0/6</span>
+    <span class="tg" style="background:rgba(230,126,34,.1);border-color:rgba(230,126,34,.35);color:#FFCC80;" id="tg-d">د: 0/5</span>
+    <span class="tg" style="background:rgba(142,68,173,.12);border-color:rgba(142,68,173,.4);color:#E1BEE7;" id="tg-e">هـ: 0/7</span>
+    <span class="tg" style="background:rgba(22,160,133,.1);border-color:rgba(22,160,133,.35);color:#80CBC4;" id="tg-f">و: 0/7</span>
+  </div>
+</div>
+
+<!-- DEPENDENCY NOTE -->
+<div class="hl orange">
+  <span>⚠️</span>
+  <span><strong>الترتيب مهم:</strong> كل مجموعة تعتمد على اللي قبلها — ابدأ من أ وامشي بالترتيب</span>
+</div>
+
+<!-- GROUPS -->
+<div class="sec">
+  <div class="sec-head"><div class="ico" style="background:rgba(27,42,74,.3)">📋</div>المجموعات والـ Features</div>
+
+  <!-- ══ GROUP A ══ -->
+  <div class="group open" id="g-a">
+    <div class="group-head" style="background:rgba(27,42,74,.4);border:1px solid rgba(75,111,165,.35);border-radius:14px 14px 0 0;" onclick="toggleGroup('g-a')">
+      <div class="group-letter" style="color:#4A6FA5;">أ</div>
+      <div class="group-info">
+        <div class="group-name" style="color:#7BA7D4;">الأساس التقني</div>
+        <div class="group-meta"><span>⏱ أسبوعان</span><span>7 features</span><span>ابدأ هنا</span></div>
+      </div>
+      <span class="group-progress" id="gp-a">0/7</span>
+      <div class="group-arrow">›</div>
+    </div>
+    <div class="features">
+      <div class="feat" onclick="toggleFeat(this,'a',0)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#1</span><span class="feat-title">Audit Log كامل لكل حدث</span><span class="impact i-max">أقصى أولوية</span></div>
+          <div class="feat-desc">سجل لا يُحذف لكل عملية — من فعلها؟ امتى؟ من أي جهاز؟ الأدلة دايماً موجودة</div>
+          <div class="feat-tags"><span class="ftag ftag-new">collection جديدة</span><span class="ftag ftag-time">3 أيام</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'a',1)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#2</span><span class="feat-title">قفل الأوردر بعد 90 ثانية</span><span class="impact i-max">أقصى أولوية</span></div>
+          <div class="feat-desc">بعد 90 ثانية لا يمكن تعديل أو حذف الأوردر إلا بكود المالك مباشرة</div>
+          <div class="feat-tags"><span class="ftag ftag-edit">تعديل على orders</span><span class="ftag ftag-time">يوم واحد</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'a',2)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#9</span><span class="feat-title">تشفير قاعدة البيانات المحلية</span><span class="impact i-high">عالي</span></div>
+          <div class="feat-desc">SQLite Encryption — حتى لو حد وصل للاب توب مش هيقدر يقرأ البيانات</div>
+          <div class="feat-tags"><span class="ftag ftag-new">SQLite SEE</span><span class="ftag ftag-time">يومان</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'a',3)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#10</span><span class="feat-title">مراقبة صحة النظام</span><span class="impact i-high">عالي</span></div>
+          <div class="feat-desc">تنبيه للمالك لو اللاب توب اتقفل أو الخدمة وقفت — يعرف فوراً</div>
+          <div class="feat-tags"><span class="ftag ftag-new">Heartbeat ping</span><span class="ftag ftag-time">يومان</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'a',4)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#24</span><span class="feat-title">Guard Listener على orders/</span><span class="impact i-max">أقصى أولوية</span></div>
+          <div class="feat-desc">onSnapshot يسمع كل أوردر جديد من sparkeg في الحال — الربط الحقيقي بين الأنظمة</div>
+          <div class="feat-tags"><span class="ftag ftag-new">Firebase onSnapshot</span><span class="ftag ftag-time">يومان</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'a',5)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#42</span><span class="feat-title">تحليل سرعة تنفيذ الأوردر</span><span class="impact i-med">متوسط</span></div>
+          <div class="feat-desc">متوسط وقت تنفيذ الأوردر لكل موظف وكل وقت — بتعرف فين الاختناق</div>
+          <div class="feat-tags"><span class="ftag ftag-dep">يعتمد على #24</span><span class="ftag ftag-time">يومان</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'a',6)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#50</span><span class="feat-title">لوحة أداء النظام للمطور</span><span class="impact i-med">متوسط</span></div>
+          <div class="feat-desc">داشبورد مخفي — حجم قاعدة البيانات، سرعة الاستجابة، آخر Sync، أخطاء السيرفر</div>
+          <div class="feat-tags"><span class="ftag ftag-new">Dev Dashboard</span><span class="ftag ftag-time">يومان</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ GROUP B ══ -->
+  <div class="group" id="g-b">
+    <div class="group-head" style="background:rgba(192,57,43,.18);border:1px solid rgba(192,57,43,.4);border-radius:14px 14px 0 0;" onclick="toggleGroup('g-b')">
+      <div class="group-letter" style="color:#E57373;">ب</div>
+      <div class="group-info">
+        <div class="group-name" style="color:#EF9A9A;">المخزون والخامات</div>
+        <div class="group-meta"><span>⏱ 3 أسابيع</span><span>6 features</span><span>يعتمد على أ</span></div>
+      </div>
+      <span class="group-progress" id="gp-b">0/6</span>
+      <div class="group-arrow">›</div>
+    </div>
+    <div class="features">
+      <div class="feat" onclick="toggleFeat(this,'b',0)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#7</span><span class="feat-title">Recipe Engine — ربط الخامات بالأوردرات</span><span class="impact i-max">أقصى أولوية</span></div>
+          <div class="feat-desc">كل أوردر جديد من sparkeg = خصم تلقائي فوري للخامات من inventory/ على Firebase</div>
+          <div class="feat-tags"><span class="ftag ftag-new">inventory/ collection</span><span class="ftag ftag-dep">يعتمد على أ</span><span class="ftag ftag-time">أسبوع</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'b',1)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#4</span><span class="feat-title">تنبيه فروقات الخامات</span><span class="impact i-max">أقصى أولوية</span></div>
+          <div class="feat-desc">فرق أكبر من 5% بين النظري والفعلي = تنبيه فوري للمالك مع تفاصيل الوقت والشيفت</div>
+          <div class="feat-tags"><span class="ftag ftag-dep">يعتمد على #7</span><span class="ftag ftag-time">3 أيام</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'b',2)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#16</span><span class="feat-title">تحليل هدر الخامات مالياً</span><span class="impact i-high">عالي</span></div>
+          <div class="feat-desc">كل فرق في المخزون يتحول لقيمة مالية — "خسرت 45 جنيه" بدل "ناقص 300 جرام"</div>
+          <div class="feat-tags"><span class="ftag ftag-dep">يعتمد على #4</span><span class="ftag ftag-time">يومان</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'b',3)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#28</span><span class="feat-title">تتبع تغيرات أسعار الموردين</span><span class="impact i-med">متوسط</span></div>
+          <div class="feat-desc">كل ما تحدّث سعر خامة، النظام يحسب أثره على هامش ربح كل صنف وينبهك</div>
+          <div class="feat-tags"><span class="ftag ftag-new">suppliers/ collection</span><span class="ftag ftag-time">يومان</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'b',4)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#43</span><span class="feat-title">إعادة تسعير تلقائية مقترحة</span><span class="impact i-high">عالي</span></div>
+          <div class="feat-desc">لو تكلفة خامة ارتفعت والهامش نزل تحت حد معين، النظام يقترح سعر بيع جديد</div>
+          <div class="feat-tags"><span class="ftag ftag-dep">يعتمد على #28</span><span class="ftag ftag-time">يومان</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'b',5)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#44</span><span class="feat-title">API داخلي للتكامل مع POS</span><span class="impact i-med">متوسط</span></div>
+          <div class="feat-desc">لو عندك POS خارجي، SPARK Guard يتربط معاه ويسحب الأوردرات تلقائياً</div>
+          <div class="feat-tags"><span class="ftag ftag-new">REST API</span><span class="ftag ftag-time">3 أيام</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ GROUP C ══ -->
+  <div class="group" id="g-c">
+    <div class="group-head" style="background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.32);border-radius:14px 14px 0 0;" onclick="toggleGroup('g-c')">
+      <div class="group-letter" style="color:#34D399;">ج</div>
+      <div class="group-info">
+        <div class="group-name" style="color:#6EE7B7;">المالية اللحظية</div>
+        <div class="group-meta"><span>⏱ أسبوعان</span><span>6 features</span><span>يعتمد على ب</span></div>
+      </div>
+      <span class="group-progress" id="gp-c">0/6</span>
+      <div class="group-arrow">›</div>
+    </div>
+    <div class="features">
+      <div class="feat" onclick="toggleFeat(this,'c',0)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#5</span><span class="feat-title">صافي الربح لحظي</span><span class="impact i-max">أقصى أولوية</span></div>
+          <div class="feat-desc">رقم واحد في الداشبورد — "ربح اليوم حتى دلوقتي: ٢,٤٥٠ جنيه" يتحدث مع كل أوردر</div>
+          <div class="feat-tags"><span class="ftag ftag-dep">يعتمد على ب</span><span class="ftag ftag-time">3 أيام</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'c',1)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#6</span><span class="feat-title">نقطة التعادل اليومية (Break-Even)</span><span class="impact i-max">أقصى أولوية</span></div>
+          <div class="feat-desc">لازم تبيع كام أوردر عشان تغطي مصاريف اليوم — تنبيه لو وصلت أو فضلت بعيد</div>
+          <div class="feat-tags"><span class="ftag ftag-dep">يعتمد على #5</span><span class="ftag ftag-time">يومان</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'c',2)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#13</span><span class="feat-title">P&L يومي تلقائي</span><span class="impact i-max">أقصى أولوية</span></div>
+          <div class="feat-desc">كشف أرباح وخسائر يومي: مبيعات − خامات − رواتب مقسمة باليوم − حصة المصاريف</div>
+          <div class="feat-tags"><span class="ftag ftag-dep">يعتمد على #5,#6</span><span class="ftag ftag-time">3 أيام</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'c',3)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#17</span><span class="feat-title">ميزانية شهرية مقابل الفعلي</span><span class="impact i-high">عالي</span></div>
+          <div class="feat-desc">تحدد ميزانية لكل بند مصاريف — النظام يتابع الصرف ويحذرك لو اقتربت من الحد</div>
+          <div class="feat-tags"><span class="ftag ftag-new">budgets/ collection</span><span class="ftag ftag-time">يومان</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'c',4)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#27</span><span class="feat-title">تكلفة الموظف لكل أوردر</span><span class="impact i-med">متوسط</span></div>
+          <div class="feat-desc">تقسيم تكلفة الرواتب على عدد الأوردرات — تكلفة العمالة الحقيقية لكل صنف</div>
+          <div class="feat-tags"><span class="ftag ftag-dep">يعتمد على #13</span><span class="ftag ftag-time">يومان</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'c',5)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#45</span><span class="feat-title">تحديثات النظام التلقائية</span><span class="impact i-med">متوسط</span></div>
+          <div class="feat-desc">النظام بيتحدث نفسه تلقائياً في الخلفية لما يجي اتصال — مفيش حاجة يدوية</div>
+          <div class="feat-tags"><span class="ftag ftag-new">Auto-updater</span><span class="ftag ftag-time">يومان</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ GROUP D ══ -->
+  <div class="group" id="g-d">
+    <div class="group-head" style="background:rgba(230,126,34,.12);border:1px solid rgba(230,126,34,.35);border-radius:14px 14px 0 0;" onclick="toggleGroup('g-d')">
+      <div class="group-letter" style="color:#FFB74D;">د</div>
+      <div class="group-info">
+        <div class="group-name" style="color:#FFCC80;">التقارير والإشعارات</div>
+        <div class="group-meta"><span>⏱ أسبوعان</span><span>5 features</span><span>يعتمد على ج</span></div>
+      </div>
+      <span class="group-progress" id="gp-d">0/5</span>
+      <div class="group-arrow">›</div>
+    </div>
+    <div class="features">
+      <div class="feat" onclick="toggleFeat(this,'d',0)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#11</span><span class="feat-title">تقرير PDF يومي تلقائي</span><span class="impact i-max">أقصى أولوية</span></div>
+          <div class="feat-desc">منتصف الليل تلقائياً — مبيعات + مخزون + فروقات + P&L — يتبعت للمالك</div>
+          <div class="feat-tags"><span class="ftag ftag-dep">يعتمد على ج كله</span><span class="ftag ftag-time">3 أيام</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'d',1)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#25</span><span class="feat-title">تقرير أسبوعي وشهري PDF</span><span class="impact i-high">عالي</span></div>
+          <div class="feat-desc">الجمعة: مقارنة الأيام + أفضل وأسوأ يوم. شهري: ربحية كاملة + مصاريف + رواتب</div>
+          <div class="feat-tags"><span class="ftag ftag-dep">يعتمد على #11</span><span class="ftag ftag-time">يومان</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'d',2)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#36</span><span class="feat-title">إشعارات واتساب للمالك</span><span class="impact i-high">عالي</span></div>
+          <div class="feat-desc">رسالة واتساب تلقائية بملخص اليوم وأي تنبيه عاجل مباشرة على موبايله</div>
+          <div class="feat-tags"><span class="ftag ftag-new">WhatsApp API</span><span class="ftag ftag-time">يومان</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'d',3)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#46</span><span class="feat-title">اقتراح تعديل الوصفة لتوفير التكلفة</span><span class="impact i-med">متوسط</span></div>
+          <div class="feat-desc">"لو غيرت نسبة الأرز 10% في الكشري هتوفر X جنيه شهرياً" — AI يحسب ويقترح</div>
+          <div class="feat-tags"><span class="ftag ftag-ai">Claude API</span><span class="ftag ftag-dep">يعتمد على ب+ج</span><span class="ftag ftag-time">3 أيام</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'d',4)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#47</span><span class="feat-title">وضع المقارنة السريعة</span><span class="impact i-med">متوسط</span></div>
+          <div class="feat-desc">"هذا الأسبوع vs الأسبوع الماضي" — أخضر وأحمر بدون تحليل معقد</div>
+          <div class="feat-tags"><span class="ftag ftag-edit">UI Component</span><span class="ftag ftag-time">يوم واحد</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ GROUP E ══ -->
+  <div class="group" id="g-e">
+    <div class="group-head" style="background:rgba(142,68,173,.15);border:1px solid rgba(142,68,173,.4);border-radius:14px 14px 0 0;" onclick="toggleGroup('g-e')">
+      <div class="group-letter" style="color:#CE93D8;">هـ</div>
+      <div class="group-info">
+        <div class="group-name" style="color:#E1BEE7;">الذكاء الاصطناعي</div>
+        <div class="group-meta"><span>⏱ 3 أسابيع</span><span>7 features</span><span>يعتمد على د</span></div>
+      </div>
+      <span class="group-progress" id="gp-e">0/7</span>
+      <div class="group-arrow">›</div>
+    </div>
+    <div class="features">
+      <div class="feat" onclick="toggleFeat(this,'e',0)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#21</span><span class="feat-title">مساعد المطعم الذكي بالعربي</span><span class="impact i-max">أقصى أولوية</span></div>
+          <div class="feat-desc">"إيه اللي حصل النهارده؟" / "ليه الأرباح نازلة؟" — إجابات فورية بالعربي من Claude</div>
+          <div class="feat-tags"><span class="ftag ftag-ai">Claude API</span><span class="ftag ftag-dep">يعتمد على كل البيانات</span><span class="ftag ftag-time">أسبوع</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'e',1)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#23</span><span class="feat-title">نظام إنذار مبكر للمصاريف الشاذة</span><span class="impact i-high">عالي</span></div>
+          <div class="feat-desc">AI يتعلم المتوسط الطبيعي — لو فاتورة الكهرباء ارتفعت 40% يسألك: "عارف السبب؟"</div>
+          <div class="feat-tags"><span class="ftag ftag-ai">Claude API</span><span class="ftag ftag-time">3 أيام</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'e',2)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#31</span><span class="feat-title">توقع المبيعات للأسبوع الجاي</span><span class="impact i-high">عالي</span></div>
+          <div class="feat-desc">AI يتنبأ بمبيعات الأسبوع بناءً على الإجازات والطقس والمواسم</div>
+          <div class="feat-tags"><span class="ftag ftag-ai">Forecasting Model</span><span class="ftag ftag-time">أسبوع</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'e',3)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#32</span><span class="feat-title">كشف شيف بيقصّر في الوصفة</span><span class="impact i-high">عالي</span></div>
+          <div class="feat-desc">AI يلاحظ لو شيف معين بيستخدم خامات أقل من الوصفة باستمرار — جودة + توفير</div>
+          <div class="feat-tags"><span class="ftag ftag-ai">Pattern Detection</span><span class="ftag ftag-time">3 أيام</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'e',4)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#33</span><span class="feat-title">توصيات تحسين المنيو</span><span class="impact i-med">متوسط</span></div>
+          <div class="feat-desc">"الكشري الكبير ربحيته أعلى — فكر في عرض ترقية بسعر مغري" — توصيات AI عملية</div>
+          <div class="feat-tags"><span class="ftag ftag-ai">Claude API</span><span class="ftag ftag-time">يومان</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'e',5)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#48</span><span class="feat-title">تدريب الموظف الجديد داخل النظام</span><span class="impact i-med">متوسط</span></div>
+          <div class="feat-desc">Interactive onboarding — الموظف الجديد بيتعلم شغله من خلال النظام نفسه</div>
+          <div class="feat-tags"><span class="ftag ftag-new">Onboarding Flow</span><span class="ftag ftag-time">3 أيام</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'e',6)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#49</span><span class="feat-title">لوحة إنجازات للموظفين</span><span class="impact i-med">متوسط</span></div>
+          <div class="feat-desc">Gamification — "أفضل موظف هذا الشهر"، "٣٠ يوم بلا فروقات" — يرفع الروح المعنوية</div>
+          <div class="feat-tags"><span class="ftag ftag-new">Achievements System</span><span class="ftag ftag-time">يومان</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ GROUP F ══ -->
+  <div class="group" id="g-f">
+    <div class="group-head" style="background:rgba(22,160,133,.1);border:1px solid rgba(22,160,133,.32);border-radius:14px 14px 0 0;" onclick="toggleGroup('g-f')">
+      <div class="group-letter" style="color:#4DB6AC;">و</div>
+      <div class="group-info">
+        <div class="group-name" style="color:#80CBC4;">تجربة المستخدم والتكامل</div>
+        <div class="group-meta"><span>⏱ أسبوعان</span><span>7 features</span><span>الصقل النهائي</span></div>
+      </div>
+      <span class="group-progress" id="gp-f">0/7</span>
+      <div class="group-arrow">›</div>
+    </div>
+    <div class="features">
+      <div class="feat" onclick="toggleFeat(this,'f',0)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#34</span><span class="feat-title">تصدير للمحاسب Excel/PDF</span><span class="impact i-high">عالي</span></div>
+          <div class="feat-desc">تصدير شهري بتنسيق محاسبي جاهز — بيوفر ساعات في المراجعة مع المحاسب</div>
+          <div class="feat-tags"><span class="ftag ftag-new">Export Engine</span><span class="ftag ftag-time">يومان</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'f',1)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#35</span><span class="feat-title">وضع الكيوسك للكاشير</span><span class="impact i-high">عالي</span></div>
+          <div class="feat-desc">واجهة مبسطة للغاية — أزرار كبيرة، بدون تشتيت، مصممة للاستخدام السريع تحت ضغط</div>
+          <div class="feat-tags"><span class="ftag ftag-new">Kiosk Mode</span><span class="ftag ftag-time">3 أيام</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'f',2)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#36</span><span class="feat-title">تقرير PDF قابل للتخصيص</span><span class="impact i-med">متوسط</span></div>
+          <div class="feat-desc">المالك يختار إيه اللي يظهر في التقرير — بس اللي يحتاجه هو بالظبط</div>
+          <div class="feat-tags"><span class="ftag ftag-edit">Report Builder</span><span class="ftag ftag-time">يومان</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'f',3)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#43</span><span class="feat-title">مصروف التوصيل والتغليف</span><span class="impact i-med">متوسط</span></div>
+          <div class="feat-desc">تسجيل مصروف التوصيل وتكلفة التغليف كبند منفصل — يحسب صح في أوردرات التوصيل</div>
+          <div class="feat-tags"><span class="ftag ftag-edit">تعديل orders schema</span><span class="ftag ftag-time">يوم واحد</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'f',4)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#44</span><span class="feat-title">وضع الليل للداشبورد</span><span class="impact i-med">متوسط</span></div>
+          <div class="feat-desc">نظرة سريعة قبل النوم — 3 أرقام بس: مبيعات اليوم، الربح، وأي تنبيه مهم</div>
+          <div class="feat-tags"><span class="ftag ftag-new">Night Mode UI</span><span class="ftag ftag-time">يوم واحد</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'f',5)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#45</span><span class="feat-title">أوردرات العروض والخصومات</span><span class="impact i-med">متوسط</span></div>
+          <div class="feat-desc">تتبع أثر العروض على الربحية الحقيقية — هل العرض بيجيب أرباح أكتر ولا مجرد مبيعات؟</div>
+          <div class="feat-tags"><span class="ftag ftag-edit">تعديل orders schema</span><span class="ftag ftag-time">يومان</span></div>
+        </div>
+      </div>
+      <div class="feat" onclick="toggleFeat(this,'f',6)">
+        <div class="feat-check">✓</div>
+        <div class="feat-body">
+          <div class="feat-top"><span class="feat-num">#46</span><span class="feat-title">ملخص صوتي يومي للمالك</span><span class="impact i-med">متوسط</span></div>
+          <div class="feat-desc">رسالة صوتية بالعربي كل يوم — ملخص 60 ثانية بأهم الأرقام والتنبيهات</div>
+          <div class="feat-tags"><span class="ftag ftag-ai">TTS + Claude</span><span class="ftag ftag-time">3 أيام</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- TIMELINE -->
+<div class="sec">
+  <div class="sec-head"><div class="ico" style="background:rgba(245,158,11,.1)">📅</div>الجدول الزمني — 18 أسبوع</div>
+  <div class="timeline">
+    <div class="tl-week"><div class="tl-num" style="color:#7BA7D4;">أ.١–٢</div><div class="tl-content"><div class="tl-title" style="color:#7BA7D4;">المجموعة أ — الأساس التقني</div><div class="tl-tasks">Audit Log + قفل أوردر + تشفير + مراقبة + Guard Listener</div></div></div>
+    <div class="tl-week"><div class="tl-num" style="color:#EF9A9A;">أ.٣–٥</div><div class="tl-content"><div class="tl-title" style="color:#EF9A9A;">المجموعة ب — المخزون والخامات</div><div class="tl-tasks">Recipe Engine + تنبيهات فروقات + هدر مالي + أسعار موردين</div></div></div>
+    <div class="tl-week"><div class="tl-num" style="color:#6EE7B7;">أ.٦–٧</div><div class="tl-content"><div class="tl-title" style="color:#6EE7B7;">المجموعة ج — المالية اللحظية</div><div class="tl-tasks">صافي ربح + Break-Even + P&L + ميزانية + تكلفة موظف</div></div></div>
+    <div class="tl-week"><div class="tl-num" style="color:#FFCC80;">أ.٨–٩</div><div class="tl-content"><div class="tl-title" style="color:#FFCC80;">المجموعة د — التقارير والإشعارات</div><div class="tl-tasks">PDF يومي + أسبوعي + شهري + واتساب + مقارنة سريعة</div></div></div>
+    <div class="tl-week"><div class="tl-num" style="color:#E1BEE7;">أ.١٠–١٢</div><div class="tl-content"><div class="tl-title" style="color:#E1BEE7;">المجموعة هـ — الذكاء الاصطناعي</div><div class="tl-tasks">مساعد بالعربي + إنذار مبكر + توقع مبيعات + كشف شيف</div></div></div>
+    <div class="tl-week"><div class="tl-num" style="color:#80CBC4;">أ.١٣–١٤</div><div class="tl-content"><div class="tl-title" style="color:#80CBC4;">المجموعة و — UX والتكامل</div><div class="tl-tasks">كيوسك + تصدير محاسب + وضع ليل + ملخص صوتي</div></div></div>
+    <div class="tl-week"><div class="tl-num" style="color:var(--a1);">أ.١٥–١٨</div><div class="tl-content"><div class="tl-title" style="color:var(--a1);">اختبار شامل + إطلاق</div><div class="tl-tasks">محاكاة سيناريوهات + تدريب الفريق + إطلاق تدريجي</div></div></div>
+  </div>
+</div>
+
+<div class="hl green" style="margin-top:20px;">
+  <span>🎯</span>
+  <span><strong>ابدأ بـ #1 و #24:</strong> Audit Log + Guard Listener — دول القلب اللي كل حاجة تانية بتبني عليه. أسبوع واحد ويكون عندك أساس حقيقي.</span>
+</div>
+
+</div>
+
+<script>
+const state = {
+  a: new Array(7).fill(false),
+  b: new Array(6).fill(false),
+  c: new Array(6).fill(false),
+  d: new Array(5).fill(false),
+  e: new Array(7).fill(false),
+  f: new Array(7).fill(false)
+};
+
+function toggleGroup(id) {
+  const g = document.getElementById(id);
+  g.classList.toggle('open');
+}
+
+function toggleFeat(el, group, idx) {
+  state[group][idx] = !state[group][idx];
+  el.classList.toggle('done', state[group][idx]);
+  updateProgress();
+}
+
+function updateProgress() {
+  const groups = ['a','b','c','d','e','f'];
+  const labels = ['أ','ب','ج','د','هـ','و'];
+  let total = 0, done = 0;
+
+  groups.forEach((g, i) => {
+    const d = state[g].filter(Boolean).length;
+    const t = state[g].length;
+    done += d; total += t;
+    document.getElementById('gp-' + g).textContent = d + '/' + t;
+    document.getElementById('tg-' + g).textContent = labels[i] + ': ' + d + '/' + t;
+    if (d === t && t > 0) document.getElementById('tg-' + g).classList.add('done');
+    else document.getElementById('tg-' + g).classList.remove('done');
+  });
+
+  document.getElementById('prog-text').textContent = done + ' / ' + total;
+  document.getElementById('prog-bar').style.width = (done / total * 100) + '%';
+}
+</script>
+</body>
+</html>
