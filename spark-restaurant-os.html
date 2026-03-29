@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPARK — نظام إدارة المطاعم الاحترافي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{--bg:#0d0f14;--bg2:#12151c;--bg3:#181c26;--bg4:#1e2333;--card:#141720;--border:#222736;--border2:#2c3347;--text:#eaecf4;--text2:#8890b0;--text3:#50597a;--primary:#f97316;--primary2:#fb923c;--accent:#3b82f6;--accent2:#60a5fa;--green:#22c55e;--red:#ef4444;--yellow:#eab308;--purple:#a855f7;--pink:#ec4899;--teal:#14b8a6;--shadow:0 4px 24px rgba(0,0,0,.5);--shadow2:0 8px 48px rgba(0,0,0,.7);--r:14px;--r2:10px;--sidebar:268px;--tr:all .3s cubic-bezier(.4,0,.2,1)}
+.light{--bg:#f1f3fb;--bg2:#e8ebf6;--bg3:#dde2f0;--bg4:#d0d7eb;--card:#fff;--border:#cdd4ea;--border2:#b8c0d8;--text:#141828;--text2:#454e6e;--text3:#8890b0;--shadow:0 4px 24px rgba(0,0,0,.08);--shadow2:0 8px 48px rgba(0,0,0,.12)}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;transition:var(--tr)}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* SIDEBAR */
+#sidebar{position:fixed;top:0;right:0;width:var(--sidebar);height:100vh;background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;z-index:100;overflow-y:auto;transition:var(--tr)}
+.sb-logo{padding:20px 18px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-shrink:0}
+.sb-logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--primary),#ea580c);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;color:#fff;font-weight:900;font-family:'Tajawal',sans-serif;flex-shrink:0}
+.sb-logo-txt{font-size:19px;font-weight:900;font-family:'Tajawal',sans-serif}.sb-logo-txt span{color:var(--primary)}
+.sb-logo-sub{font-size:10px;color:var(--text3);margin-top:1px}
+.sb-section-lbl{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:1.5px;padding:14px 18px 5px;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 18px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);border-right:3px solid transparent;transition:var(--tr);text-decoration:none;user-select:none}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:linear-gradient(90deg,rgba(249,115,22,.12),transparent);color:var(--primary);border-right-color:var(--primary)}
+.nav-item i{width:17px;text-align:center;font-size:13px}
+.nav-badge{margin-right:auto;background:var(--primary);color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px}
+.sb-bottom{padding:14px 18px;border-top:1px solid var(--border);flex-shrink:0}
+.sb-progress-lbl{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:6px}
+.pbar{height:5px;background:var(--bg4);border-radius:3px;overflow:hidden}
+.pbar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--primary),var(--primary2));transition:width .8s ease}
+
+/* MAIN */
+#main{margin-right:var(--sidebar);min-height:100vh;transition:var(--tr)}
+
+/* TOPBAR */
+#topbar{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(12px)}
+.tb-title{font-size:17px;font-weight:700;font-family:'Tajawal',sans-serif}
+.tb-right{display:flex;align-items:center;gap:10px}
+.btn-icon{width:36px;height:36px;background:var(--bg3);border:1px solid var(--border);border-radius:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);font-size:14px;transition:var(--tr)}
+.btn-icon:hover{background:var(--bg4);color:var(--text)}
+
+/* SECTION */
+.section{display:none;padding:28px;animation:fadeIn .35s ease}
+.section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* BUTTON */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;border:none;transition:var(--tr);font-family:'Cairo',sans-serif;text-decoration:none}
+.btn-primary{background:linear-gradient(135deg,var(--primary),#ea580c);color:#fff;box-shadow:0 4px 14px rgba(249,115,22,.35)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(249,115,22,.5)}
+.btn-secondary{background:var(--bg4);color:var(--text);border:1px solid var(--border2)}
+.btn-secondary:hover{background:var(--bg3)}
+.btn-accent{background:linear-gradient(135deg,var(--accent),#2563eb);color:#fff}
+.btn-green{background:linear-gradient(135deg,#16a34a,var(--green));color:#fff}
+.btn-sm{padding:7px 15px;font-size:12.5px}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,var(--bg3) 0%,var(--bg2) 60%,var(--bg3) 100%);border:1px solid var(--border);border-radius:var(--r);padding:36px;margin-bottom:24px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-80px;left:-80px;width:220px;height:220px;background:radial-gradient(circle,rgba(249,115,22,.12),transparent 70%);border-radius:50%}
+.hero::after{content:'';position:absolute;bottom:-50px;right:15%;width:180px;height:180px;background:radial-gradient(circle,rgba(59,130,246,.08),transparent 70%);border-radius:50%}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(249,115,22,.12);border:1px solid rgba(249,115,22,.25);color:var(--primary);font-size:11.5px;font-weight:600;padding:4px 13px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-size:28px;font-weight:900;font-family:'Tajawal',sans-serif;line-height:1.35;margin-bottom:10px}
+.hero h1 span{color:var(--primary)}
+.hero p{font-size:14px;color:var(--text2);line-height:1.85;max-width:580px}
+.hero-actions{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
+
+/* GRIDS */
+.g2{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+
+/* CARD */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:22px;transition:var(--tr)}
+.card:hover{border-color:var(--border2)}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.card-title{font-size:15px;font-weight:700;font-family:'Tajawal',sans-serif;display:flex;align-items:center;gap:9px}
+.card-title i{color:var(--primary)}
+
+/* STAT CARD */
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;transition:var(--tr);position:relative;overflow:hidden}
+.stat-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:var(--shadow)}
+.stat-icon{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:19px;margin-bottom:12px}
+.stat-val{font-size:26px;font-weight:900;font-family:'Tajawal',sans-serif}
+.stat-lbl{font-size:12.5px;color:var(--text2);margin-top:3px}
+.stat-tag{font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:3px;margin-top:7px;padding:2px 9px;border-radius:20px}
+.tag-up{background:rgba(34,197,94,.12);color:var(--green)}
+.tag-dn{background:rgba(239,68,68,.12);color:var(--red)}
+
+/* PROGRESS */
+.prog-wrap{margin:6px 0}
+.prog-lbl{display:flex;justify-content:space-between;font-size:11.5px;color:var(--text2);margin-bottom:5px}
+.prog-bar{height:7px;background:var(--bg3);border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--primary),var(--primary2));transition:width .8s cubic-bezier(.4,0,.2,1)}
+.prog-fill.blue{background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.prog-fill.green{background:linear-gradient(90deg,#16a34a,var(--green))}
+.prog-fill.purple{background:linear-gradient(90deg,#7c3aed,var(--purple))}
+.prog-fill.pink{background:linear-gradient(90deg,#be185d,var(--pink))}
+.prog-fill.teal{background:linear-gradient(90deg,#0d9488,var(--teal))}
+
+/* CHECKLIST */
+.chklist{list-style:none}
+.chklist li{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:var(--tr);border-radius:0}
+.chklist li:last-child{border-bottom:none}
+.chklist li:hover{padding-right:5px}
+.chk-box{width:21px;height:21px;border-radius:6px;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:var(--tr);font-size:11px;color:transparent}
+.chklist li.done .chk-box{background:var(--green);border-color:var(--green);color:#fff}
+.chklist li.done .chk-txt{text-decoration:line-through;color:var(--text3)}
+.chk-txt{font-size:13.5px;flex:1;line-height:1.5}
+.chk-pri{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;flex-shrink:0}
+.p-h{background:rgba(239,68,68,.12);color:var(--red)}
+.p-m{background:rgba(234,179,8,.12);color:var(--yellow)}
+.p-l{background:rgba(34,197,94,.12);color:var(--green)}
+
+/* TABS */
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:22px;border-bottom:1px solid var(--border);padding-bottom:0}
+.tab-btn{padding:9px 16px;border-radius:8px 8px 0 0;font-size:13px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--text2);transition:var(--tr);font-family:'Cairo',sans-serif;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--primary);border-bottom-color:var(--primary)}
+.tab-pane{display:none;animation:fadeIn .3s ease}
+.tab-pane.active{display:block}
+
+/* INFO BLOCKS */
+.ib{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);padding:15px 17px;margin-bottom:12px}
+.ib.warn{border-color:rgba(234,179,8,.3);background:rgba(234,179,8,.04)}
+.ib.danger{border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.04)}
+.ib.ok{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.04)}
+.ib.info{border-color:rgba(59,130,246,.3);background:rgba(59,130,246,.04)}
+.ib-title{font-size:13px;font-weight:700;margin-bottom:7px;display:flex;align-items:center;gap:7px}
+.ib ul{padding-right:18px}.ib ul li{font-size:13px;color:var(--text2);line-height:1.85;margin-bottom:2px}
+.ib p{font-size:13px;color:var(--text2);line-height:1.85}
+
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.kpi-item{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);padding:14px;text-align:center}
+.kpi-val{font-size:20px;font-weight:900;color:var(--primary);font-family:'Tajawal',sans-serif}
+.kpi-lbl{font-size:11.5px;color:var(--text2);margin-top:3px}
+
+/* TIMELINE */
+.timeline{position:relative;padding-right:22px}
+.timeline::before{content:'';position:absolute;right:7px;top:0;bottom:0;width:2px;background:var(--border)}
+.tl-item{position:relative;margin-bottom:22px;padding-right:28px}
+.tl-dot{position:absolute;right:-15px;top:5px;width:14px;height:14px;border-radius:50%;background:var(--primary);border:3px solid var(--bg)}
+.tl-item.done .tl-dot{background:var(--green)}
+.tl-item.locked .tl-dot{background:var(--text3)}
+.tl-week{font-size:11px;font-weight:700;color:var(--primary);letter-spacing:1px;margin-bottom:5px}
+.tl-title{font-size:14.5px;font-weight:700;font-family:'Tajawal',sans-serif;margin-bottom:5px}
+.tl-tasks{font-size:12.5px;color:var(--text2);line-height:1.85}
+.tl-item.locked .tl-title,.tl-item.locked .tl-tasks{color:var(--text3)}
+.tl-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px;margin-bottom:7px}
+
+/* CALCULATOR */
+.calc-wrap{background:var(--bg3);border-radius:var(--r);padding:26px}
+.form-lbl{font-size:12.5px;font-weight:600;color:var(--text2);margin-bottom:7px;display:block}
+.form-input{width:100%;padding:11px 15px;background:var(--bg);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:14px;font-family:'Cairo',sans-serif;transition:var(--tr);outline:none}
+.form-input:focus{border-color:var(--primary)}
+.form-select{width:100%;padding:11px 15px;background:var(--bg);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:14px;font-family:'Cairo',sans-serif;outline:none;cursor:pointer}
+.form-textarea{width:100%;padding:11px 15px;min-height:80px;background:var(--bg);border:1px solid var(--border);border-radius:9px;color:var(--text);resize:vertical;font-size:13.5px;font-family:'Cairo',sans-serif;transition:var(--tr);outline:none}
+.form-textarea:focus{border-color:var(--primary)}
+.calc-result{background:linear-gradient(135deg,var(--bg4),var(--bg3));border:1px solid var(--border2);border-radius:var(--r2);padding:18px;margin-top:18px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.res-item{text-align:center}
+.res-val{font-size:22px;font-weight:900;font-family:'Tajawal',sans-serif}
+.res-val.good{color:var(--green)}.res-val.warn{color:var(--yellow)}.res-val.bad{color:var(--red)}
+.res-lbl{font-size:11.5px;color:var(--text2);margin-top:3px}
+
+/* RND */
+.rnd-entry{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);padding:15px;margin-bottom:11px;animation:fadeIn .3s ease}
+.rnd-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px}
+.rnd-name{font-size:14.5px;font-weight:700}
+.rnd-date{font-size:11px;color:var(--text3)}
+.rnd-notes{font-size:13px;color:var(--text2);line-height:1.7}
+.rnd-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.rnd-tag{font-size:10.5px;padding:2px 9px;border-radius:20px;background:rgba(249,115,22,.12);color:var(--primary)}
+.rnd-del{background:rgba(239,68,68,.1);border:none;color:var(--red);font-size:12px;padding:3px 8px;border-radius:6px;cursor:pointer;transition:var(--tr);font-family:'Cairo',sans-serif}
+.rnd-del:hover{background:rgba(239,68,68,.2)}
+
+/* SOP */
+.sop-step{display:flex;gap:13px;margin-bottom:14px;align-items:flex-start}
+.sop-num{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#ea580c);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sop-content h4{font-size:13.5px;font-weight:700;margin-bottom:3px}
+.sop-content p{font-size:12.5px;color:var(--text2);line-height:1.7}
+
+/* SECTION NAV CARDS */
+.sec-nav-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:26px}
+.sec-nav-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px;cursor:pointer;transition:var(--tr);text-align:center}
+.sec-nav-card:hover{border-color:var(--primary);transform:translateY(-3px);box-shadow:var(--shadow)}
+.sec-nav-card .snc-icon{width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 11px}
+.sec-nav-card h3{font-size:13px;font-weight:700;margin-bottom:3px}
+.sec-nav-card p{font-size:11.5px;color:var(--text3);line-height:1.5}
+.snc-prog{height:3px;background:var(--bg3);border-radius:2px;margin-top:11px;overflow:hidden}
+.snc-prog-fill{height:100%;border-radius:2px;background:var(--primary);transition:width .6s ease}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 11px;border-radius:20px;font-size:11.5px;font-weight:600}
+.bd-o{background:rgba(249,115,22,.12);color:var(--primary);border:1px solid rgba(249,115,22,.25)}
+.bd-b{background:rgba(59,130,246,.12);color:var(--accent);border:1px solid rgba(59,130,246,.25)}
+.bd-g{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.25)}
+.bd-r{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.25)}
+.bd-p{background:rgba(168,85,247,.12);color:var(--purple);border:1px solid rgba(168,85,247,.25)}
+.bd-y{background:rgba(234,179,8,.12);color:var(--yellow);border:1px solid rgba(234,179,8,.25)}
+
+/* QUICK ACTIONS */
+.qa-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:26px}
+.qa-btn{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:15px 10px;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;transition:var(--tr);text-align:center}
+.qa-btn:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:var(--shadow)}
+.qa-btn i{font-size:21px}
+.qa-btn span{font-size:12px;font-weight:600;color:var(--text2)}
+
+/* COMPLETE BADGE */
+.complete-badge{display:none;flex-direction:column;align-items:center;padding:36px 28px;text-align:center;background:linear-gradient(135deg,rgba(249,115,22,.08),rgba(59,130,246,.08));border:1px solid rgba(249,115,22,.25);border-radius:var(--r);margin-top:18px}
+.complete-badge.show{display:flex;animation:popIn .5s cubic-bezier(.4,0,.2,1)}
+@keyframes popIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+.trophy{font-size:56px;margin-bottom:14px}
+
+/* TOAST */
+#toast{position:fixed;bottom:22px;left:22px;background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:13px 18px;display:flex;align-items:center;gap:9px;box-shadow:var(--shadow2);z-index:999;transform:translateY(80px);opacity:0;transition:all .4s cubic-bezier(.4,0,.2,1);font-size:13.5px;max-width:300px}
+#toast.show{transform:translateY(0);opacity:1}
+
+/* OVERLAY */
+#overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99;display:none;backdrop-filter:blur(4px)}
+#overlay.show{display:block}
+
+/* MOB */
+#mob-btn{display:none}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:20px 0}
+.mb4{margin-bottom:4px}.mb8{margin-bottom:8px}.mb12{margin-bottom:12px}.mb16{margin-bottom:16px}.mb20{margin-bottom:20px}.mb24{margin-bottom:24px}
+.mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}.mt20{margin-top:20px}.mt24{margin-top:24px}
+.fw7{font-weight:700}.fw9{font-weight:900}.fs11{font-size:11px}.fs12{font-size:12px}.fs13{font-size:13px}.fs14{font-size:14px}
+.c2{color:var(--text2)}.c3{color:var(--text3)}.c-o{color:var(--primary)}.c-g{color:var(--green)}.c-r{color:var(--red)}.c-b{color:var(--accent)}.c-p{color:var(--purple)}.c-y{color:var(--yellow)}
+.bg-o{background:rgba(249,115,22,.12)}.bg-b{background:rgba(59,130,246,.12)}.bg-g{background:rgba(34,197,94,.12)}.bg-r{background:rgba(239,68,68,.12)}.bg-p{background:rgba(168,85,247,.12)}.bg-y{background:rgba(234,179,8,.12)}.bg-t{background:rgba(20,184,166,.12)}
+
+@media(max-width:1100px){.g4,.sec-nav-grid{grid-template-columns:repeat(2,1fr)}.qa-grid{grid-template-columns:repeat(2,1fr)}.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:800px){:root{--sidebar:0px}#sidebar{transform:translateX(100%);width:268px}#sidebar.open{transform:translateX(0)}#main{margin-right:0}#mob-btn{display:flex}.section{padding:18px 14px}.g2,.g3{grid-template-columns:1fr}.hero{padding:22px}.hero h1{font-size:22px}.sec-nav-grid{grid-template-columns:1fr 1fr}.calc-result{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.sec-nav-grid,.qa-grid{grid-template-columns:1fr}.calc-result{grid-template-columns:1fr}.kpi-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<div id="overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-icon">S</div>
+    <div>
+      <div class="sb-logo-txt"><span>SPARK</span> OS</div>
+      <div class="sb-logo-sub">نظام المطاعم الاحترافي</div>
+    </div>
+  </div>
+
+  <div class="sb-section-lbl">الرئيسية</div>
+  <a class="nav-item active" onclick="show('dashboard')"><i class="fa-solid fa-gauge-high"></i> لوحة التحكم <span class="nav-badge">رئيسي</span></a>
+  <a class="nav-item" onclick="show('roadmap')"><i class="fa-solid fa-map-location-dot"></i> خارطة الـ 60 يوم</a>
+
+  <div class="sb-section-lbl">أقسام المطعم</div>
+  <a class="nav-item" onclick="show('kitchen')"><i class="fa-solid fa-fire-burner"></i> المطبخ</a>
+  <a class="nav-item" onclick="show('operations')"><i class="fa-solid fa-gears"></i> الإدارة والتشغيل</a>
+  <a class="nav-item" onclick="show('finance')"><i class="fa-solid fa-sack-dollar"></i> التكاليف والماليات</a>
+  <a class="nav-item" onclick="show('inventory')"><i class="fa-solid fa-boxes-stacked"></i> المخزون والمشتريات</a>
+  <a class="nav-item" onclick="show('safety')"><i class="fa-solid fa-shield-halved"></i> السلامة الغذائية</a>
+  <a class="nav-item" onclick="show('rnd')"><i class="fa-solid fa-flask-vial"></i> البحث والتطوير</a>
+  <a class="nav-item" onclick="show('menu')"><i class="fa-solid fa-book-open-reader"></i> المنيو والهندسة</a>
+  <a class="nav-item" onclick="show('marketing')"><i class="fa-solid fa-bullhorn"></i> التسويق والبراند</a>
+  <a class="nav-item" onclick="show('cx')"><i class="fa-solid fa-star-half-stroke"></i> خدمة العملاء</a>
+  <a class="nav-item" onclick="show('hr')"><i class="fa-solid fa-users-gear"></i> التوظيف والتدريب</a>
+  <a class="nav-item" onclick="show('tech')"><i class="fa-solid fa-laptop-code"></i> التكنولوجيا والأنظمة</a>
+  <a class="nav-item" onclick="show('scale')"><i class="fa-solid fa-arrow-trend-up"></i> التوسع وإدارة الفروع</a>
+
+  <div class="sb-section-lbl">الأدوات</div>
+  <a class="nav-item" onclick="show('calculator')"><i class="fa-solid fa-calculator"></i> حاسبة تكلفة الطعام</a>
+
+  <div style="flex:1"></div>
+  <div class="sb-bottom">
+    <div class="sb-progress-lbl"><span>التقدم الكلي</span><span id="sb-pct">0%</span></div>
+    <div class="pbar"><div class="pbar-fill" id="sb-pbar" style="width:0%"></div></div>
+    <div style="font-size:11px;color:var(--text3);margin-top:5px;" id="sb-tasks-lbl">0 مهمة منجزة</div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div id="main">
+  <div id="topbar">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button class="btn-icon" id="mob-btn" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+      <div>
+        <div class="tb-title" id="page-title">لوحة التحكم</div>
+        <div style="font-size:11px;color:var(--text3)">SPARK Restaurant OS — Fast Food Edition</div>
+      </div>
+    </div>
+    <div class="tb-right">
+      <button class="btn-icon" onclick="toggleTheme()" title="تغيير الوضع"><i class="fa-solid fa-moon" id="theme-ico"></i></button>
+      <button class="btn btn-primary btn-sm" onclick="show('calculator')"><i class="fa-solid fa-calculator"></i> احسب التكلفة</button>
+    </div>
+  </div>
+
+  <!-- ===== DASHBOARD ===== -->
+  <div class="section active" id="sec-dashboard">
+    <div class="hero">
+      <div class="hero-badge"><i class="fa-solid fa-fire"></i> SPARK Restaurant OS — Fast Food Edition</div>
+      <h1>نظام <span>احترافي</span> لإدارة وتعلّم المطاعم</h1>
+      <p>مرحباً يا محمد! هذا نظامك الشخصي لإدارة SPARK — بيتزا · كريب · كالزون · لودد فرايز. من هنا تتعلم، تخطط، وتنفذ كمشغّل محترف على مستوى عالمي.</p>
+      <div class="hero-actions">
+        <button class="btn btn-primary" onclick="show('roadmap')"><i class="fa-solid fa-map"></i> ابدأ خارطة الطريق</button>
+        <button class="btn btn-accent" onclick="show('kitchen')"><i class="fa-solid fa-fire-burner"></i> المطبخ</button>
+        <button class="btn btn-secondary" onclick="show('calculator')"><i class="fa-solid fa-calculator"></i> احسب التكلفة</button>
+      </div>
+    </div>
+
+    <!-- QUICK ACTIONS -->
+    <div class="qa-grid">
+      <div class="qa-btn" onclick="show('roadmap')"><i class="fa-solid fa-map c-o"></i><span>ابدأ التعلم</span></div>
+      <div class="qa-btn" onclick="updateDashboard()"><i class="fa-solid fa-chart-pie c-b"></i><span>راجع التقدم</span></div>
+      <div class="qa-btn" onclick="show('rnd')"><i class="fa-solid fa-flask c-p"></i><span>أضف تجربة</span></div>
+      <div class="qa-btn" onclick="show('calculator')"><i class="fa-solid fa-calculator c-g"></i><span>احسب تكلفة</span></div>
+    </div>
+
+    <!-- STATS -->
+    <div class="g4 mb24">
+      <div class="stat-card"><div class="stat-icon bg-o"><i class="fa-solid fa-percent c-o"></i></div><div class="stat-val" id="d-pct">0%</div><div class="stat-lbl">التقدم الكلي</div><div class="stat-tag tag-up"><i class="fa-solid fa-bolt"></i> نشط</div></div>
+      <div class="stat-card"><div class="stat-icon bg-g"><i class="fa-solid fa-circle-check c-g"></i></div><div class="stat-val" id="d-done">0</div><div class="stat-lbl">مهام منجزة</div><div class="stat-tag tag-up"><i class="fa-solid fa-arrow-up"></i> ممتاز</div></div>
+      <div class="stat-card"><div class="stat-icon bg-b"><i class="fa-solid fa-list-check c-b"></i></div><div class="stat-val" id="d-rem">0</div><div class="stat-lbl">مهام متبقية</div><div class="stat-tag tag-dn"><i class="fa-solid fa-hourglass"></i> استمر</div></div>
+      <div class="stat-card"><div class="stat-icon bg-p"><i class="fa-solid fa-flask c-p"></i></div><div class="stat-val" id="d-rnd">0</div><div class="stat-lbl">تجارب R&D</div><div class="stat-tag tag-up"><i class="fa-solid fa-star"></i> مبدع</div></div>
+    </div>
+
+    <div class="g2">
+      <div class="card">
+        <div class="card-hdr"><div class="card-title"><i class="fa-solid fa-chart-bar"></i> تقدم الأقسام</div></div>
+        <div id="sec-prog-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><div class="card-title"><i class="fa-solid fa-grid-2"></i> الأقسام الـ 12</div></div>
+        <div class="sec-nav-grid" style="grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:0" id="mini-sec-cards"></div>
+      </div>
+    </div>
+
+    <div class="complete-badge" id="comp-badge">
+      <div class="trophy">🏆</div>
+      <h2 style="font-size:22px;font-weight:900;font-family:'Tajawal',sans-serif">أحسنت يا محمد! أتممت النظام</h2>
+      <p style="color:var(--text2);margin-top:8px">لقد أكملت جميع المهام — أنت الآن مشغّل محترف على مستوى عالمي!</p>
+      <div class="badge bd-o mt12"><i class="fa-solid fa-medal"></i> SPARK Pro Operator Badge</div>
+    </div>
+  </div>
+
+  <!-- ===== ROADMAP ===== -->
+  <div class="section" id="sec-roadmap">
+    <div class="hero">
+      <div class="hero-badge"><i class="fa-solid fa-map"></i> خطة التطبيق</div>
+      <h1>خارطة الطريق — <span>60 يوم</span> لمشغّل محترف</h1>
+      <p>من مالك عادي إلى مشغّل محترف في 60 يوم — خطة تفصيلية أسبوعية مع مراحل واضحة.</p>
+    </div>
+    <div class="g2">
+      <div>
+        <div class="card mb16">
+          <div class="card-hdr"><div class="card-title"><i class="fa-solid fa-flag"></i> المرحلة 1 — المبتدئ (أسبوع 1-2)</div><div class="badge bd-g">ابدأ هنا</div></div>
+          <div class="timeline">
+            <div class="tl-item">
+              <div class="tl-dot"></div>
+              <div class="tl-badge bd-o"><i class="fa-solid fa-calendar-week"></i> الأسبوع الأول</div>
+              <div class="tl-title">الأساسيات والمطبخ</div>
+              <div class="tl-tasks">✓ مراجعة كل وصفة وتوحيدها بدقة<br>✓ رسم مسارات العمل في المطبخ<br>✓ إعداد SOPs للطهي والتجهيز<br>✓ تدريب الفريق على المعايير</div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot"></div>
+              <div class="tl-badge bd-b"><i class="fa-solid fa-calendar-week"></i> الأسبوع الثاني</div>
+              <div class="tl-title">السلامة الغذائية والمخزون</div>
+              <div class="tl-tasks">✓ تطبيق نظام FIFO في المخزون<br>✓ جدول صلاحيات يومي<br>✓ فحص درجات الحرارة<br>✓ إعداد سجل الاستلام</div>
+            </div>
+          </div>
+        </div>
+        <div class="card mb16">
+          <div class="card-hdr"><div class="card-title"><i class="fa-solid fa-rocket"></i> المرحلة 2 — المتقدم (أسبوع 3-6)</div><div class="badge bd-y">تعمّق</div></div>
+          <div class="timeline">
+            <div class="tl-item">
+              <div class="tl-dot"></div>
+              <div class="tl-badge bd-p"><i class="fa-solid fa-calendar-week"></i> أسبوع 3</div>
+              <div class="tl-title">التكاليف والماليات</div>
+              <div class="tl-tasks">✓ حساب Food Cost لكل صنف<br>✓ تحليل هوامش الربح<br>✓ هندسة المنيو (Stars/Dogs)<br>✓ مراجعة الأسعار مقابل السوق</div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot"></div>
+              <div class="tl-badge bd-o"><i class="fa-solid fa-calendar-week"></i> أسبوع 4</div>
+              <div class="tl-title">التسويق وتجربة العميل</div>
+              <div class="tl-tasks">✓ إعداد هوية بصرية للسوشيال<br>✓ حملة تجريبية على إنستجرام<br>✓ نظام جمع الآراء والتقييمات<br>✓ تحسين تجربة الاستلام والتوصيل</div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot"></div>
+              <div class="tl-badge bd-b"><i class="fa-solid fa-calendar-week"></i> أسبوع 5-6</div>
+              <div class="tl-title">التكنولوجيا والتوظيف</div>
+              <div class="tl-tasks">✓ إعداد POS واستخراج تقارير<br>✓ ربط التوصيل بالنظام<br>✓ Job Descriptions واضحة<br>✓ نظام تقييم الموظفين</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card mb16">
+          <div class="card-hdr"><div class="card-title"><i class="fa-solid fa-trophy"></i> المرحلة 3 — الاحترافي (أسبوع 7-9)</div><div class="badge bd-p">المستوى النهائي</div></div>
+          <div class="timeline">
+            <div class="tl-item">
+              <div class="tl-dot"></div>
+              <div class="tl-badge bd-p"><i class="fa-solid fa-calendar-week"></i> أسبوع 7-8</div>
+              <div class="tl-title">R&D وهندسة المنيو المتقدمة</div>
+              <div class="tl-tasks">✓ إطلاق محطة R&D منتظمة<br>✓ تجربة 3 منتجات جديدة شهرياً<br>✓ اختبار العملاء (Tasting sessions)<br>✓ تحليل بيانات المبيعات عمق</div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot"></div>
+              <div class="tl-badge bd-g"><i class="fa-solid fa-calendar-week"></i> أسبوع 9</div>
+              <div class="tl-title">التوسع والفروع</div>
+              <div class="tl-tasks">✓ Playbook جاهز للفروع<br>✓ نظام مركزي للتحكم<br>✓ KPIs لكل فرع<br>✓ خطة تدريب موحدة</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-title"><i class="fa-solid fa-chart-line"></i> مؤشرات نجاح الخطة</div></div>
+          <div class="kpi-grid">
+            <div class="kpi-item"><div class="kpi-val">25-30%</div><div class="kpi-lbl">Food Cost مستهدف</div></div>
+            <div class="kpi-item"><div class="kpi-val">&lt;5%</div><div class="kpi-lbl">نسبة الهدر المقبولة</div></div>
+            <div class="kpi-item"><div class="kpi-val">4.5+</div><div class="kpi-lbl">تقييم العملاء</div></div>
+            <div class="kpi-item"><div class="kpi-val">&lt;8 دقيقة</div><div class="kpi-lbl">وقت التجهيز</div></div>
+            <div class="kpi-item"><div class="kpi-val">15-20%</div><div class="kpi-lbl">هامش الربح الصافي</div></div>
+            <div class="kpi-item"><div class="kpi-val">100%</div><div class="kpi-lbl">التزام SOPs</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== KITCHEN ===== -->
+  <div class="section" id="sec-kitchen">
+    <div class="hero">
+      <div class="hero-badge"><i class="fa-solid fa-fire-burner"></i> قسم المطبخ</div>
+      <h1>نظام <span>المطبخ</span> الاحترافي</h1>
+      <p>المطبخ هو قلب مطعمك — من هنا تُصنع التجربة وتُفقد أو تُكسب الأرباح. نظام مطبخ محكم = جودة ثابتة + تكلفة مضبوطة.</p>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="openTab('kitchen','overview')">نظرة عامة</button>
+      <button class="tab-btn" onclick="openTab('kitchen','sop')">SOPs</button>
+      <button class="tab-btn" onclick="openTab('kitchen','checklist')">Checklist يومي</button>
+      <button class="tab-btn" onclick="openTab('kitchen','kpi')">KPIs</button>
+    </div>
+
+    <div id="kitchen-overview" class="tab-pane active">
+      <div class="g2">
+        <div>
+          <div class="ib info mb12"><div class="ib-title"><i class="fa-solid fa-lightbulb c-b"></i> ليه المطبخ مهم؟</div><p>المطبخ المنظم يرفع سرعة الخدمة 40%، يقلل الهدر 30%، ويضمن جودة ثابتة في كل صنف وكل وردية.</p></div>
+          <div class="ib ok mb12"><div class="ib-title"><i class="fa-solid fa-star c-g"></i> أهم النقاط</div><ul><li>توحيد الوصفات بـ Recipe Cards لكل صنف</li><li>Line Check قبل كل وردية (15 دقيقة)</li><li>Mise en Place — كل شيء جاهز قبل الخدمة</li><li>تدريب الفريق على كل صنف خطوة بخطوة</li><li>Portion Control لكل مكوّن</li></ul></div>
+          <div class="ib warn"><div class="ib-title"><i class="fa-solid fa-triangle-exclamation c-y"></i> أخطاء شائعة</div><ul><li>الاعتماد على الذاكرة بدون Recipe Cards</li><li>عدم وزن المكونات — الهدر الخفي</li><li>مطبخ غير منظم = وقت ضائع في الـ Rush</li><li>إهمال Line Check الصباحي</li></ul></div>
+        </div>
+        <div>
+          <div class="ib mb12"><div class="ib-title"><i class="fa-solid fa-list-ol c-o"></i> خطوات التطبيق</div><ul><li>اعمل Recipe Card لكل صنف (بيتزا، كريب، كالزون، فرايز)</li><li>حدد أوزان الـ Portions بالجرام</li><li>ارسم layout المطبخ وحدد مكان كل شيء</li><li>اعمل Line Check Sheet يومي</li><li>نظام FIFO في الثلاجة والمخزن</li><li>تدريب أسبوعي للفريق</li></ul></div>
+          <div class="card">
+            <div class="card-hdr"><div class="card-title"><i class="fa-solid fa-pizza-slice"></i> منتجات SPARK</div></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div class="ib" style="margin:0;text-align:center"><div style="font-size:22px">🍕</div><div class="fw7 fs13 mt8">بيتزا</div></div>
+              <div class="ib" style="margin:0;text-align:center"><div style="font-size:22px">🥞</div><div class="fw7 fs13 mt8">كريب</div></div>
+              <div class="ib" style="margin:0;text-align:center"><div style="font-size:22px">🫓</div><div class="fw7 fs13 mt8">كالزون</div></div>
+              <div class="ib" style="margin:0;text-align:center"><div style="font-size:22px">🍟</div><div class="fw7 fs13 mt8">لودد فرايز</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="kitchen-sop" class="tab-pane">
+      <div class="g2">
+        <div class="card"><div class="card-hdr"><div class="card-title"><i class="fa-solid fa-clipboard-list"></i> SOP — Line Check الصباحي</div></div>
+          <div class="sop-step"><div class="sop-num">1</div><div class="sop-content"><h4>افتح المطبخ 90 دقيقة قبل الخدمة</h4><p>تحقق من درجات الحرارة في الثلاجات والفريزر قبل أي شيء.</p></div></div>
+          <div class="sop-step"><div class="sop-num">2</div><div class="sop-content"><h4>فحص كل المكونات</h4><p>اتحقق من صلاحية كل مكوّن، ارمي أي شيء منتهي فوراً دون نقاش.</p></div></div>
+          <div class="sop-step"><div class="sop-num">3</div><div class="sop-content"><h4>Mise en Place</h4><p>جهّز كل الكميات المطلوبة حسب توقعات اليوم — قبل بدء الخدمة.</p></div></div>
+          <div class="sop-step"><div class="sop-num">4</div><div class="sop-content"><h4>اختبر كل المعدات</h4><p>الفرن، الغريل، الفرايز — تأكد إنهم شغالين بالدرجة الصح.</p></div></div>
+          <div class="sop-step"><div class="sop-num">5</div><div class="sop-content"><h4>وقّع على Line Check Sheet</h4><p>لا يبدأ أي يوم بدون توقيع الشيف المسؤول على الـ Sheet.</p></div></div>
+        </div>
+        <div class="card"><div class="card-hdr"><div class="card-title"><i class="fa-solid fa-pizza-slice"></i> SOP — تجهيز البيتزا</div></div>
+          <div class="sop-step"><div class="sop-num">1</div><div class="sop-content"><h4>العجينة (180-200 جرام للوسط)</h4><p>افرد العجينة على سطح مطحون لمنع اللصق — ادور شكل منتظم.</p></div></div>
+          <div class="sop-step"><div class="sop-num">2</div><div class="sop-content"><h4>الصوص (60-70 مل)</h4><p>وزّع الصوص بملعقة كبيرة بشكل دائري من المركز للخارج.</p></div></div>
+          <div class="sop-step"><div class="sop-num">3</div><div class="sop-content"><h4>الجبن (90-100 جرام)</h4><p>وزّع الموزاريلا بشكل متساوي — لا تتراكم في المنتصف.</p></div></div>
+          <div class="sop-step"><div class="sop-num">4</div><div class="sop-content"><h4>التوبينجز والخبز</h4><p>فرن 260 درجة — 8-10 دقائق — حتى الجبن يذهب ويتكسر.</p></div></div>
+          <div class="sop-step"><div class="sop-num">5</div><div class="sop-content"><h4>التشطيب والتغليف</h4><p>اقطع بـ Pizza Cutter نظيف — تأكد من التغليف السليم قبل التسليم.</p></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="kitchen-checklist" class="tab-pane">
+      <div class="g2">
+        <div class="card"><div class="card-hdr"><div class="card-title"><i class="fa-solid fa-list-check"></i> Checklist الصباح</div><div class="badge bd-g" id="kitchen-prog-badge">0%</div></div>
+          <ul class="chklist" id="cl-kitchen-morning"></ul>
+        </div>
+        <div class="card"><div class="card-hdr"><div class="card-title"><i class="fa-solid fa-moon"></i> Checklist الإغلاق</div></div>
+          <ul class="chklist" id="cl-kitchen-close"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div id="kitchen-kpi" class="tab-pane">
+      <div class="g2">
+        <div class="card"><div class="card-hdr"><div class="card-title"><i class="fa-solid fa-chart-bar"></i> KPIs المطبخ</div></div>
+          <div class="kpi-grid">
+            <div class="kpi-item"><div class="kpi-val">&lt;8 دق</div><div class="kpi-lbl">وقت التجهيز المستهدف</div></div>
+            <div class="kpi-item"><div class="kpi-val">&lt;3%</div><div class="kpi-lbl">نسبة المرتجعات</div></div>
+            <div class="kpi-item"><div class="kpi-val">±5g</div><div class="kpi-lbl">دقة الـ Portion</div></div>
+            <div class="kpi-item"><div class="kpi-val">&lt;5%</div><div class="kpi-lbl">نسبة الهدر</div></div>
+            <div class="kpi-item"><div class="kpi-val">100%</div><div class="kpi-lbl">Line Check يومي</div></div>
+            <div class="kpi-item"><div class="kpi-val">4.8+</div><div class="kpi-lbl">تقييم جودة الطعام</div></div>
+          </div>
+        </div>
+        <div class="card"><div class="card-hdr"><div class="card-title"><i class="fa-solid fa-temperature-half"></i> درجات الحرارة الحرجة</div></div>
+          <div class="kpi-grid">
+            <div class="kpi-item"><div class="kpi-val">260°</div><div class="kpi-lbl">فرن البيتزا</div></div>
+            <div class="kpi-item"><div class="kpi-val">180°</div><div class="kpi-lbl">زيت الفرايز</div></div>
+            <div class="kpi-item"><div class="kpi-val">4°</div><div class="kpi-lbl">الثلاجة (حد أقصى)</div></div>
+            <div class="kpi-item"><div class="kpi-val">-18°</div><div class="kpi-lbl">الفريزر (حد أقصى)</div></div>
+            <div class="kpi-item"><div class="kpi-val">75°+</div><div class="kpi-lbl">حرارة الطهي الداخلية</div></div>
+            <div class="kpi-item"><div class="kpi-val">63°+</div><div class="kpi-lbl">حرارة الاحتفاظ بالطعام</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== OPERATIONS ===== -->
+  <div class="section" id="sec-operations">
+    <div class="hero">
+      <div class="hero-badge"><i class="fa-solid fa-gears"></i> الإدارة والتشغيل</div>
+      <h1>نظام <span>التشغيل</span> الاحترافي</h1>
+      <p>الإدارة المحترفة تعني إن المطعم يشتغل بكفاءة حتى لو أنت مش موجود. الأنظمة والإجراءات هي اللي تحقق ذلك.</p>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="openTab('ops','overview')">نظرة عامة</button>
+      <button class="tab-btn" onclick="openTab('ops','checklist')">Checklist</button>
+      <button class="tab-btn" onclick="openTab('ops','kpi')">KPIs</button>
+    </div>
+    <div id="ops-overview" class="tab-pane active">
+      <div class="g2">
+        <div>
+          <div class="ib info mb12"><div class="ib-title"><i class="fa-solid fa-lightbulb c-b"></i> التشغيل المحترف</div><p>المشغّل المحترف يبني أنظمة تعمل وحدها. مش بتدير الناس — بتدير الأنظمة التي تدير الناس.</p></div>
+          <div class="ib ok mb12"><div class="ib-title"><i class="fa-solid fa-check c-g"></i> أهم النقاط</div><ul><li>جدول عمل واضح لكل وردية</li><li>Opening & Closing Procedures موثقة</li><li>Shift Handover دقيق بين الورديات</li><li>نظام تقارير يومية للمدير</li><li>اجتماع يومي قصير 10 دقائق مع الفريق</li></ul></div>
+          <div class="ib warn"><div class="ib-title"><i class="fa-solid fa-triangle-exclamation c-y"></i> أخطاء شائعة</div><ul><li>إدارة بدون بيانات — القرار بالحدس</li><li>غياب Shift Handover — معلومات تضيع</li><li>لا يوجد خطة للطوارئ</li><li>الاعتماد على الذاكرة بدلاً من الأنظمة</li></ul></div>
+        </div>
+        <div>
+          <div class="ib mb12"><div class="ib-title"><i class="fa-solid fa-list-ol c-o"></i> خطوات التطبيق</div><ul><li>اعمل Opening Checklist يومي</li><li>اعمل Closing Checklist يومي</li><li>جدول أسبوعي للموظفين</li><li>نظام تقارير يومي (المبيعات، الهدر، المشاكل)</li><li>اجتماع أسبوعي مع المدير</li><li>مراجعة شهرية للأداء</li></ul></div>
+          <div class="card">
+            <div class="card-hdr"><div class="card-title"><i class="fa-solid fa-calendar-days"></i> هيكل اليوم التشغيلي</div></div>
+            <div class="ib" style="margin:0 0 8px"><div class="ib-title"><i class="fa-solid fa-sun c-y"></i> الفترة الصباحية (8-11)</div><p>Opening Checklist · Line Check · Mise en Place · اجتماع الفريق</p></div>
+            <div class="ib" style="margin:0 0 8px"><div class="ib-title"><i class="fa-solid fa-fire c-r"></i> ساعات الذروة (12-3)</div><p>Speed & Accuracy · Communication بين المحطات · Quality Control</p></div>
+            <div class="ib" style="margin:0"><div class="ib-title"><i class="fa-solid fa-moon c-b"></i> الإغلاق (9-11)</div><p>Closing Checklist · تقرير اليوم · Handover للموردين</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="ops-checklist" class="tab-pane">
+      <div class="g2">
+        <div class="card"><div class="card-hdr"><div class="card-title"><i class="fa-solid fa-door-open"></i> Opening Checklist</div></div><ul class="chklist" id="cl-ops-open"></ul></div>
+        <div class="card"><div class="card-hdr"><div class="card-title"><i class="fa-solid fa-door-closed"></i> Closing Checklist</div></div><ul class="chklist" id="cl-ops-close"></ul></div>
+      </div>
+    </div>
+    <div id="ops-kpi" class="tab-pane">
+      <div class="card"><div class="card-hdr"><div class="card-title"><i class="fa-solid fa-chart-bar"></i> KPIs التشغيل</div></div>
+        <div class="kpi-grid">
+          <div class="kpi-item"><div class="kpi-val">100%</div><div class="kpi-lbl">التزام Opening/Closing</div></div>
+          <div class="kpi-item"><div class="kpi-val">&lt;5%</div><div class="kpi-lbl">نسبة غياب الموظفين</div></div>
+          <div class="kpi-item"><div class="kpi-val">يومي</div><div class="kpi-lbl">تقارير المدير</div></div>
+          <div class="kpi-item"><div class="kpi-val">&lt;15 دق</div><div class="kpi-lbl">وقت انتظار العميل</div></div>
+          <div class="kpi-item"><div class="kpi-val">+95%</div><div class="kpi-lbl">دقة الطلبات</div></div>
+          <div class="kpi-item"><div class="kpi-val">أسبوعي</div><div class="kpi-lbl">اجتماع الفريق</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FINANCE ===== -->
+  <div class="section" id="sec-finance">
+    <div class="hero">
+      <div class="hero-badge"><i class="fa-solid fa-sack-dollar"></i> التكاليف والماليات</div>
+      <h1><span>التحكم</span> في التكاليف يصنع الفرق</h1>
+      <p>المطعم الناجح مش بس يبيع كتير — يتحكم في التكاليف. كل 1% توفر في Food Cost = ربح إضافي مباشر.</p>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="openTab('fin','overview')">المفاهيم</button>
+      <button class="tab-btn" onclick="openTab('fin','checklist')">Checklist</button>
+      <button class="tab-btn" onclick="openTab('fin','kpi')">KPIs</button>
+    </div>
+    <div id="fin-overview" class="tab-pane active">
+      <div class="g2">
+        <div>
+          <div class="ib info mb12"><div class="ib-title"><i class="fa-solid fa-percentage c-b"></i> Food Cost % = التكلفة ÷ سعر البيع × 100</div><p>المستهدف: 25-32% للـ Fast Food. أي شيء فوق 35% يعني إن في مشكلة في الـ Portion أو التسعير.</p></div>
+          <div class="ib ok mb12"><div class="ib-title"><i class="fa-solid fa-chart-pie c-g"></i> توزيع التكاليف المثالي</div><ul><li>Food Cost: 28-32%</li><li>Labor Cost: 20-25%</li><li>الإيجار: 8-12%</li><li>التشغيل والمرافق: 5-8%</li><li>صافي الربح: 15-20%+</li></ul></div>
+          <div class="ib warn"><div class="ib-title"><i class="fa-solid fa-triangle-exclamation c-y"></i> أخطاء التسعير الشائعة</div><ul><li>التسعير على أساس المنافسة فقط بدون حساب التكلفة</li><li>نسيان تكاليف التغليف في الحساب</li><li>إهمال تكلفة العمالة في كل طلب</li><li>عدم مراجعة الأسعار مع تغير أسعار المواد</li></ul></div>
+        </div>
+        <div>
+          <div class="ib mb12"><div class="ib-title"><i class="fa-solid fa-list-ol c-o"></i> خطوات ضبط الماليات</div><ul><li>احسب Food Cost لكل صنف بدقة</li><li>راجع الأسعار كل 3 أشهر</li><li>اعمل P&L شهري مبسط</li><li>راقب الهدر يومياً وسجّله</li><li>قارن الفعلي بالمستهدف أسبوعياً</li></ul></div>
+          <div class="card">
+            <div class="card-hdr"><div class="card-title"><i class="fa-solid fa-calculator"></i> مثال حساب سريع</div></div>
+            <div class="ib" style="margin:0 0 8px"><div class="ib-title">بيتزا متوسط</div><p>تكلفة المكونات: 35 جنيه | سعر البيع: 120 جنيه<br><strong>Food Cost = 29.2% ✅</strong></p></div>
+            <div class="ib" style="margin:0 0 8px"><div class="ib-title">كريب</div><p>تكلفة المكونات: 18 جنيه | سعر البيع: 55 جنيه<br><strong>Food Cost = 32.7% ✅</strong></p></div>
+            <div class="ib danger" style="margin:0"><div class="ib-title">لودد فرايز — خطر!</div><p>تكلفة المكونات: 22 جنيه | سعر البيع: 55 جنيه<br><strong>Food Cost = 40% ⚠️ راجع التسعير</strong></p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="fin-checklist" class="tab-pane">
+      <div class="card"><div class="card-hdr"><div class="card-title"><i class="fa-solid fa-list-check"></i> Checklist المالي الشهري</div></div><ul class="chklist" id="cl-finance"></ul></div>
+    </div>
+    <div id="fin-kpi" class="tab-pane">
+      <div class="card"><div class="card-hdr"><div class="card-title"><i class="fa-solid fa-chart-bar"></i> KPIs المالية</div></div>
+        <div class="kpi-grid">
+          <div class="kpi-item"><div class="kpi-val">28-32%</div><div class="kpi-lbl">Food Cost المستهدف</div></div>
+          <div class="kpi-item"><div class="kpi-val">20-25%</div><div class="kpi-lbl">Labor Cost المستهدف</div></div>
+          <div class="kpi-item"><div class="kpi-val">15%+</div><div class="kpi-lbl">صافي الربح</div></div>
+          <div class="kpi-item"><div class="kpi-val">&lt;3%</div><div class="kpi-lbl">نسبة الهدر من المبيعات</div></div>
+          <div class="kpi-item"><div class="kpi-val">شهري</div><div class="kpi-lbl">مراجعة P&L</div></div>
+          <div class="kpi-item"><div class="kpi-val">3 أشهر</div><div class="kpi-lbl">دورة مراجعة الأسعار</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== INVENTORY ===== -->
+  <div class="section" id="sec-inventory">
+    <div class="hero">
+      <div class="hero-badge"><i class="fa-solid fa-boxes-stacked"></i> المخزون والمشتريات</div>
+      <h1>إدارة <span>المخزون</span> باحتراف</h1>
+      <p>المخزون المضبوط = صفر نقص + صفر هدر = ربح مباشر. نظام المخزون الصح هو اللي يحميك من الكوارث.</p>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="openTab('inv','overview')">النظام</button>
+      <button class="tab-btn" onclick="openTab('inv','checklist')">Checklist</button>
+      <button class="tab-btn" onclick="openTab('inv','kpi')">KPIs</button>
+    </div>
+    <div id="inv-overview" class="tab-pane active">
+      <div class="g2">
+        <div>
+          <div class="ib info mb12"><div class="ib-title"><i class="fa-solid fa-rotate c-b"></i> نظام FIFO (أول داخل أول خارج)</div><p>المنتجات القديمة تتحرك قبل الجديدة — دائماً. ضع الجديد خلف القديم في الثلاجة والرف.</p></div>
+          <div class="ib ok mb12"><div class="ib-title"><i class="fa-solid fa-check c-g"></i> أهم النقاط</div><ul><li>جرد يومي للمواد سريعة التلف</li><li>جرد أسبوعي شامل للمخزن</li><li>Par Level لكل صنف (الحد الأدنى)</li><li>تواريخ الصلاحية على كل شيء</li><li>سجل الاستلام لكل توريدة</li></ul></div>
+          <div class="ib warn"><div class="ib-title"><i class="fa-solid fa-triangle-exclamation c-y"></i> أخطاء شائعة</div><ul><li>الشراء الزائد يتعفن قبل الاستهلاك</li><li>الشراء الناقص يوقف الإنتاج</li><li>عدم تدوين تواريخ الصلاحية</li><li>مخزن غير منظم = ساعات ضائعة</li></ul></div>
+        </div>
+        <div>
+          <div class="ib mb12"><div class="ib-title"><i class="fa-solid fa-list-ol c-o"></i> Par Levels مقترحة لـ SPARK</div><ul><li>عجينة بيتزا: لا تقل عن 30 كيلو</li><li>موزاريلا: لا تقل عن 10 كيلو</li><li>صوص طماطم: لا تقل عن 5 كيلو</li><li>بطاطس (فرايز): لا تقل عن 20 كيلو</li><li>عجينة كريب: لا تقل عن 5 كيلو</li></ul></div>
+          <div class="card">
+            <div class="card-hdr"><div class="card-title"><i class="fa-solid fa-truck"></i> إدارة الموردين</div></div>
+            <div class="ib" style="margin:0 0 8px"><div class="ib-title">معايير اختيار المورد</div><ul><li>جودة ثابتة في كل توريدة</li><li>دقة في المواعيد</li><li>سعر تنافسي مع جودة مضمونة</li><li>مرونة في الكميات</li></ul></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="inv-checklist" class="tab-pane">
+      <div class="card"><div class="card-hdr"><div class="card-title"><i class="fa-solid fa-list-check"></i> Checklist المخزون اليومي</div></div><ul class="chklist" id="cl-inventory"></ul></div>
+    </div>
+    <div id="inv-kpi" class="tab-pane">
+      <div class="card"><div class="card-hdr"><div class="card-title"><i class="fa-solid fa-chart-bar"></i> KPIs المخزون</div></div>
+        <div class="kpi-grid">
+          <div class="kpi-item"><div class="kpi-val">&lt;3%</div><div class="kpi-lbl">نسبة الهدر المقبولة</div></div>
+          <div class="kpi-item"><div class="kpi-val">100%</div><div class="kpi-lbl">تطبيق FIFO</div></div>
+          <div class="kpi-item"><div class="kpi-val">يومي</div><div class="kpi-lbl">جرد المواد الحساسة</div></div>
+          <div class="kpi-item"><div class="kpi-val">0</div><div class="kpi-lbl">أصناف منتهية الصلاحية</div></div>
+          <div class="kpi-item"><div class="kpi-val">أسبوعي</div><div class="kpi-lbl">جرد شامل للمخزن</div></div>
+          <div class="kpi-item"><div class="kpi-val">2</div><div class="kpi-lbl">عدد الموردين البدلاء لكل صنف</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SAFETY ===== -->
+  <div class="section" id="sec-safety">
+    <div class="hero">
+      <div class="hero-badge"><i class="fa-solid fa-shield-halved"></i> السلامة الغذائية</div>
+      <h1><span>السلامة</span> أولاً — دائماً</h1>
+      <p>السلامة الغذائية ليست اختياراً — هي الأساس. تسمم غذائي واحد يمكنه أن يدمر سمعة سنوات في ساعات.</p>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="openTab('safe','overview')">المبادئ</button>
+      <button class="tab-btn" onclick="openTab('safe','checklist')">Checklist</button>
+      <button class="tab-btn" onclick="openTab('safe','kpi')">KPIs</button>
+    </div>
+    <div id="safe-overview" class="tab-pane active">
+      <div class="g2">
+        <div>
+          <div class="ib danger mb12"><div class="ib-title"><i class="fa-solid fa-skull c-r"></i> منطقة الخطر الحرارية</div><p>بين 4°م و 63°م — الجراثيم تتكاثر بسرعة. لا تترك أي طعام في هذه المنطقة أكثر من ساعتين.</p></div>
+          <div class="ib ok mb12"><div class="ib-title"><i class="fa-solid fa-check c-g"></i> المبادئ الـ 4 للسلامة</div><ul><li>🧼 النظافة — اغسل يديك 20 ثانية</li><li>🔀 الفصل — لا تخلط خام مع مطبوخ</li><li>🌡️ الطهي — وصّل للدرجة الصحيحة</li><li>❄️ التبريد — ضع الطعام في الثلاجة فوراً</li></ul></div>
+          <div class="ib warn"><div class="ib-title"><i class="fa-solid fa-triangle-exclamation c-y"></i> أكثر أسباب التسمم</div><ul><li>التلوث المتبادل بين الخام والمطبوخ</li><li>عدم غسل الأيدي بشكل صحيح</li><li>ترك الطعام خارج التبريد لفترة طويلة</li><li>معدات غير نظيفة بشكل كافٍ</li></ul></div>
+        </div>
+        <div>
+          <div class="ib mb12"><div class="ib-title"><i class="fa-solid fa-list-ol c-o"></i> خطوات التطبيق في SPARK</div><ul><li>ملصقات تواريخ الصلاحية على كل شيء</li><li>درجات حرارة موثقة 3 مرات يومياً</li><li>ألوان ألواح التقطيع (أحمر=لحم، أخضر=خضار)</li><li>برنامج تنظيف أسبوعي للمعدات</li><li>تدريب شهري للفريق على السلامة</li></ul></div>
+          <div class="card">
+            <div class="card-hdr"><div class="card-title"><i class="fa-solid fa-thermometer-half"></i> بطاقة درجات الحرارة</div></div>
+            <div class="kpi-grid" style="margin-top:0">
+              <div class="kpi-item"><div class="kpi-val" style="color:var(--red)">63°+</div><div class="kpi-lbl">حفظ الطعام الساخن</div></div>
+              <div class="kpi-item"><div class="kpi-val" style="color:var(--accent)">1-4°</div><div class="kpi-lbl">تبريد الطعام</div></div>
+              <div class="kpi-item"><div class="kpi-val" style="color:var(--purple)">-18°</div><div class="kpi-lbl">التجميد</div></div>
+              <div class="kpi-item"><div class="kpi-val" style="color:var(--green)">75°</div><div class="kpi-lbl">طهي الدجاج</div></div>
+              <div class="kpi-item"><div class="kpi-val" style="color:var(--green)">71°</div><div class="kpi-lbl">طهي اللحوم</div></div>
+              <div class="kpi-item"><div class="kpi-val" style="color:var(--yellow)">2 ساعة</div><div class="kpi-lbl">حد الخطر الزمني</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="safe-checklist" class="tab-pane">
+      <div class="card"><div class="card-hdr"><div class="card-title"><i class="fa-solid fa-list-check"></i> Checklist السلامة اليومي</div></div><ul class="chklist" id="cl-safety"></ul></div>
+    </div>
+    <div id="safe-kpi" class="tab-pane">
+      <div class="card"><div class="card-hdr"><div class="card-title"><i class="fa-solid fa-chart-bar"></i> KPIs السلامة الغذائية</div></div>
+        <div class="kpi-grid">
+          <div class="kpi-item"><div class="kpi-val">0</div><div class="kpi-lbl">حوادث تسمم غذائي</div></div>
+          <div class="kpi-item"><div class="kpi-val">3×يوم</div><div class="kpi-lbl">تسجيل درجات الحرارة</div></div>
+          <div class="kpi-item"><div class="kpi-val">100%</div><div class="kpi-lbl">الالتزام بالقفازات والشعر</div></div>
+          <div class="kpi-item"><div class="kpi-val">شهري</div><div class="kpi-lbl">تدريب السلامة للفريق</div></div>
+          <div class="kpi-item"><div class="kpi-val">0</div><div class="kpi-lbl">أصناف منتهية الصلاحية في الخدمة</div></div>
+          <div class="kpi-item"><div class="kpi-val">أسبوعي</div><div class="kpi-lbl">تنظيف عميق المعدات</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== R&D ===== -->
+  <div class="section" id="sec-rnd">
+    <div class="hero">
+      <div class="hero-badge"><i class="fa-solid fa-flask-vial"></i> مختبر البحث والتطوير</div>
+      <h1>مختبر <span>الابتكار</span> والتطوير</h1>
+      <p>المطاعم الناجحة لا تتوقف عن الابتكار. هنا تسجّل تجاربك، تطور منتجاتك، وتبني المستقبل.</p>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="card-hdr"><div class="card-title"><i class="fa-solid fa-plus"></i> تجربة جديدة</div></div>
+        <div class="mb12">
+          <label class="form-lbl">اسم الصنف / التجربة</label>
+          <input type="text" class="form-input" id="rnd-name" placeholder="مثال: بيتزا بالتوت الأسود">
+        </div>
+        <div class="mb12">
+          <label class="form-lbl">الفئة</label>
+          <select class="form-select" id="rnd-cat">
+            <option value="بيتزا">🍕 بيتزا</option>
+            <option value="كريب">🥞 كريب</option>
+            <option value="كالزون">🫓 كالزون</option>
+            <option value="فرايز">🍟 لودد فرايز</option>
+            <option value="مشروب">🧃 مشروب</option>
+            <option value="أخرى">💡 أخرى</option>
+          </select>
+        </div>
+        <div class="mb12">
+          <label class="form-lbl">المكونات والوصفة</label>
+          <textarea class="form-textarea" id="rnd-recipe" placeholder="اكتب المكونات والطريقة..."></textarea>
+        </div>
+        <div class="mb16">
+          <label class="form-lbl">النتيجة والملاحظات</label>
+          <textarea class="form-textarea" id="rnd-notes" placeholder="ما هي نتيجة التجربة؟ هل نجحت؟ ما الذي يحتاج تحسين؟"></textarea>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+          <div>
+            <label class="form-lbl">التقييم</label>
+            <select class="form-select" id="rnd-rating">
+              <option value="⭐⭐⭐⭐⭐">⭐⭐⭐⭐⭐ ممتاز</option>
+              <option value="⭐⭐⭐⭐">⭐⭐⭐⭐ جيد جداً</option>
+              <option value="⭐⭐⭐">⭐⭐⭐ جيد</option>
+              <option value="⭐⭐">⭐⭐ يحتاج تطوير</option>
+              <option value="⭐">⭐ فاشل</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-lbl">الحالة</label>
+            <select class="form-select" id="rnd-status">
+              <option value="تجربة">🧪 تجربة</option>
+              <option value="تطوير">🔧 قيد التطوير</option>
+              <option value="جاهز للمنيو">✅ جاهز للمنيو</option>
+              <option value="مرفوض">❌ مرفوض</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="saveRND()" style="width:100%"><i class="fa-solid fa-save"></i> حفظ التجربة</button>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><div class="card-title"><i class="fa-solid fa-flask"></i> سجل التجارب</div><div class="badge bd-o" id="rnd-count-badge">0 تجربة</div></div>
+        <div id="rnd-list"><div style="text-align:center;padding:40px;color:var(--text3)"><i class="fa-solid fa-flask" style="font-size:32px;margin-bottom:12px;display:block"></i>لا توجد تجارب بعد — ابدأ التجربة الأولى!</div></div>
+      </div>
+    </div>
+    <div class="card mt20">
+      <div class="card-hdr"><div class="card-title"><i class="fa-solid fa-lightbulb"></i> أفكار لتطوير منتجات SPARK</div></div>
+      <div class="g3">
+        <div class="ib" style="margin:0"><div class="ib-title"><i class="fa-solid fa-pizza-slice c-o"></i> أفكار بيتزا</div><ul><li>بيتزا بالمشروم والكريمة</li><li>بيتزا بالدجاج البافلو</li><li>بيتزا بالبصل المكرمل</li><li>بيتزا بالتوتة السوداء</li></ul></div>
+        <div class="ib" style="margin:0"><div class="ib-title"><i class="fa-solid fa-cookie c-p"></i> أفكار كريب</div><ul><li>كريب بالنوتيلا والموز</li><li>كريب الدجاج المشوي</li><li>كريب الفراولة والكريم</li><li>كريب بالجبن والبيض</li></ul></div>
+        <div class="ib" style="margin:0"><div class="ib-title"><i class="fa-solid fa-fire c-r"></i> أفكار فرايز</div><ul><li>فرايز بالجبن الأزرق</li><li>فرايز بالدجاج الحار</li><li>فرايز بالأفوكادو</li><li>فرايز بصوص الكمأ</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MENU ===== -->
+  <div class="section" id="sec-menu">
+    <div class="hero">
+      <div class="hero-badge"><i class="fa-solid fa-book-open-reader"></i> المنيو والهندسة</div>
+      <h1>هندسة <span>المنيو</span> — علم الربح</h1>
+      <p>Menu Engineering هو فن وعلم ترتيب وتسعير المنيو لتحقيق أقصى ربح. ليس كل الأصناف متساوية.</p>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="openTab('mnu','matrix')">مصفوفة المنيو</button>
+      <button class="tab-btn" onclick="openTab('mnu','principles')">المبادئ</button>
+      <button class="tab-btn" onclick="openTab('mnu','checklist')">Checklist</button>
+    </div>
+    <div id="mnu-matrix" class="tab-pane active">
+      <div class="g2">
+        <div class="card" style="border-color:var(--green)"><div class="card-hdr"><div class="card-title" style="color:var(--green)"><i class="fa-solid fa-star"></i> النجوم (Stars)</div><div class="badge bd-g">ربح عالي + طلب عالي</div></div>
+          <p class="fs13 c2 mb12">هذه منتجاتك الذهبية — احم جودتها ولا تغير فيها.</p>
+          <div class="ib ok" style="margin:0"><ul><li>بيتزا الكلاسيك المارجريتا</li><li>اللودد فرايز الأساسي</li><li>الكريب بالنوتيلا</li></ul></div>
+          <div class="mt12 ib" style="margin-top:12px"><p class="fs12"><strong>استراتيجية:</strong> ضعها في مركز المنيو، صوّرها باحتراف، دربّ الفريق على بيعها.</p></div>
+        </div>
+        <div class="card" style="border-color:var(--accent)"><div class="card-hdr"><div class="card-title" style="color:var(--accent)"><i class="fa-solid fa-puzzle-piece"></i> الغامضة (Puzzles)</div><div class="badge bd-b">ربح عالي + طلب منخفض</div></div>
+          <p class="fs13 c2 mb12">ربح ممتاز لكن العملاء لا يطلبونها كثيراً — تحتاج تسويق.</p>
+          <div class="ib info" style="margin:0"><ul><li>الكالزون المميز</li><li>بيتزا البيضاء بالكريمة</li><li>فرايز المشروم الكريمي</li></ul></div>
+          <div class="mt12 ib" style="margin-top:12px"><p class="fs12"><strong>استراتيجية:</strong> غير الاسم، حسّن التصوير، دربّ الكاشير على اقتراحها.</p></div>
+        </div>
+        <div class="card" style="border-color:var(--yellow)"><div class="card-hdr"><div class="card-title" style="color:var(--yellow)"><i class="fa-solid fa-horse"></i> الأحصنة (Plowhorses)</div><div class="badge bd-y">ربح منخفض + طلب عالي</div></div>
+          <p class="fs13 c2 mb12">الكل يطلبها لكنها لا تدر ربحاً كافياً — راجع تكلفتها أو سعرها.</p>
+          <div class="ib warn" style="margin:0"><ul><li>البيتزا الاقتصادية الصغيرة</li><li>الفرايز البلين</li><li>الكريب البسيط</li></ul></div>
+          <div class="mt12 ib" style="margin-top:12px"><p class="fs12"><strong>استراتيجية:</strong> ارفع السعر تدريجياً أو قلل التكلفة بتحسين الوصفة.</p></div>
+        </div>
+        <div class="card" style="border-color:var(--red)"><div class="card-hdr"><div class="card-title" style="color:var(--red)"><i class="fa-solid fa-dog"></i> الكلاب (Dogs)</div><div class="badge bd-r">ربح منخفض + طلب منخفض</div></div>
+          <p class="fs13 c2 mb12">لا ربح ولا طلب — السؤال: لماذا لا تزال في المنيو؟</p>
+          <div class="ib danger" style="margin:0"><ul><li>أي صنف لا يُطلب أسبوعياً</li><li>الأصناف الموسمية منتهية الموسم</li><li>تجارب فاشلة لم تُحذف</li></ul></div>
+          <div class="mt12 ib" style="margin-top:12px"><p class="fs12"><strong>استراتيجية:</strong> احذفه من المنيو فوراً. بساطة المنيو = سرعة الاختيار = رضا أعلى.</p></div>
+        </div>
+      </div>
+    </div>
+    <div id="mnu-principles" class="tab-pane">
+      <div class="g2">
+        <div>
+          <div class="ib ok mb12"><div class="ib-title"><i class="fa-solid fa-eye c-g"></i> قواعد تصميم المنيو</div><ul><li>العين تذهب أولاً للزاوية العلوية اليمنى</li><li>3-5 أصناف في كل فئة — الكثير يربك</li><li>لا تضع علامة الجنيه بجانب السعر</li><li>استخدم الأسعار المنتهية بـ 9 (99, 129)</li><li>صور احترافية تزيد المبيعات 30%</li></ul></div>
+          <div class="ib info mb12"><div class="ib-title"><i class="fa-solid fa-lightbulb c-b"></i> Upselling وCross-selling</div><ul><li>"تحب تضيف إضافة؟ بـ 15 جنيه بس"</li><li>"مع الطلب ده المشروب يكون 10 جنيه"</li><li>"الحجم الكبير أوفر بـ 20 جنيه"</li></ul></div>
+        </div>
+        <div>
+          <div class="ib mb12"><div class="ib-title"><i class="fa-solid fa-list-ol c-o"></i> مراجعة المنيو الدورية</div><ul><li>كل 6 أشهر: راجع كل الأصناف وأداؤها</li><li>احذف أي صنف أداؤه ضعيف</li><li>أضف صنف موسمي كل 3 أشهر</li><li>احسب Food Cost بعد أي تغيير في المنيو</li></ul></div>
+          <div class="ib warn"><div class="ib-title"><i class="fa-solid fa-triangle-exclamation c-y"></i> أخطاء المنيو الشائعة</div><ul><li>منيو طويل جداً = قرار صعب = وقت ضائع</li><li>لا صور = مبيعات أقل</li><li>تسعير عشوائي بدون حساب</li><li>إهمال الأصناف الجديدة موسمياً</li></ul></div>
+        </div>
+      </div>
+    </div>
+    <div id="mnu-checklist" class="tab-pane">
+      <div class="card"><div class="card-hdr"><div class="card-title"><i class="fa-solid fa-list-check"></i> Checklist هندسة المنيو</div></div><ul class="chklist" id="cl-menu"></ul></div>
+    </div>
+  </div>
+
+  <!-- ===== MARKETING ===== -->
+  <div class="section" id="sec-marketing">
+    <div class="hero">
+      <div class="hero-badge"><i class="fa-solid fa-bullhorn"></i> التسويق والبراند</div>
+      <h1>براند <span>SPARK</span> — الهوية التي تُباع</h1>
+      <p>التسويق المحترف لا يبيع طعاماً — يبيع تجربة وهوية وشعور. من هنا تبني سمعتك الرقمية.</p>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="openTab('mkt','strategy')">الاستراتيجية</button>
+      <button class="tab-btn" onclick="openTab('mkt','social')">السوشيال ميديا</button>
+      <button class="tab-btn" onclick="openTab('mkt','checklist')">Checklist</button>
+    </div>
+    <div id="mkt-strategy" class="tab-pane active">
+      <div class="g2">
+        <div>
+          <div class="ib info mb12"><div class="ib-title"><i class="fa-solid fa-bullseye c-b"></i> هوية SPARK</div><p>SPARK = الشرارة التي توقد الشهية. هويتك: طعام محلي بجودة عالمية، تجربة شبابية مميزة، ابتكار مستمر.</p></div>
+          <div class="ib ok mb12"><div class="ib-title"><i class="fa-solid fa-users c-g"></i> جمهورك المستهدف</div><ul><li>الشباب 18-35 سنة</li><li>الطلاب والموظفون</li><li>محبو الـ Fast Food العصري</li><li>المنطقة الجغرافية المحيطة بالفرع</li></ul></div>
+          <div class="ib warn"><div class="ib-title"><i class="fa-solid fa-triangle-exclamation c-y"></i> أخطاء التسويق</div><ul><li>التسويق بدون استهداف واضح</li><li>محتوى بدون صور احترافية</li><li>عدم الرد على التعليقات والتقييمات</li><li>عدم الاتساق في النشر</li></ul></div>
+        </div>
+        <div>
+          <div class="ib mb12"><div class="ib-title"><i class="fa-solid fa-list-ol c-o"></i> خطة التسويق الشهرية</div><ul><li>أسبوع 1: محتوى خلف الكواليس (Kitchen Videos)</li><li>أسبوع 2: عروض وأوفرز</li><li>أسبوع 3: تفاعل مع العملاء (Reviews, UGC)</li><li>أسبوع 4: إطلاق صنف جديد أو موسمي</li></ul></div>
+          <div class="ib ok"><div class="ib-title"><i class="fa-solid fa-lightbulb c-g"></i> أفكار محتوى لـ SPARK</div><ul><li>Reels خلف الكواليس في المطبخ</li><li>صور منتجات احترافية بالإضاءة الصحيحة</li><li>Customer Reviews + Before/After</li><li>عروض Flash Sale لفترة محدودة</li><li>Polls واستطلاعات في Stories</li></ul></div>
+        </div>
+      </div>
+    </div>
+    <div id="mkt-social" class="tab-pane">
+      <div class="g3">
+        <div class="card"><div class="card-hdr"><div class="card-title" style="color:#e1306c"><i class="fa-brands fa-instagram"></i> إنستجرام</div></div>
+          <div class="ib ok mb8" style="margin:0 0 10px"><div class="ib-title">الأولوية القصوى</div><p>الصور + Reels + Stories هي أقوى أدواتك. 3-4 منشورات أسبوعياً.</p></div>
+          <ul class="fs13 c2" style="padding-right:18px;line-height:2"><li>صور طعام عالية الجودة</li><li>Reels تحضير الطعام</li><li>Stories يومية للعروض</li><li>Collaborations مع Food Bloggers</li></ul>
+        </div>
+        <div class="card"><div class="card-hdr"><div class="card-title" style="color:#1877f2"><i class="fa-brands fa-facebook"></i> فيسبوك</div></div>
+          <div class="ib info mb8" style="margin:0 0 10px"><div class="ib-title">للعروض والإعلانات</div><p>المجموعات المحلية وإعلانات Facebook Ads ممتازة للتوصيل.</p></div>
+          <ul class="fs13 c2" style="padding-right:18px;line-height:2"><li>نشر في مجموعات المنطقة</li><li>Facebook Ads مستهدفة</li><li>عروض الـ Happy Hour</li><li>Reviews ورد فعل سريع</li></ul>
+        </div>
+        <div class="card"><div class="card-hdr"><div class="card-title" style="color:#ff0050"><i class="fa-brands fa-tiktok"></i> تيك توك</div></div>
+          <div class="ib warn mb8" style="margin:0 0 10px"><div class="ib-title">المستقبل هنا</div><p>اللحظات الطبيعية والحقيقية تنتشر أكثر من المحتوى المخطط.</p></div>
+          <ul class="fs13 c2" style="padding-right:18px;line-height:2"><li>فيديوهات تحضير سريعة</li><li>Trends المطاعم</li><li>ردود على Comments بفيديو</li><li>خلف الكواليس يومياً</li></ul>
+        </div>
+      </div>
+    </div>
+    <div id="mkt-checklist" class="tab-pane">
+      <div class="card"><div class="card-hdr"><div class="card-title"><i class="fa-solid fa-list-check"></i> Checklist التسويق الأسبوعي</div></div><ul class="chklist" id="cl-marketing"></ul></div>
+    </div>
+  </div>
+
+  <!-- ===== CX ===== -->
+  <div class="section" id="sec-cx">
+    <div class="hero">
+      <div class="hero-badge"><i class="fa-solid fa-star-half-stroke"></i> خدمة العملاء</div>
+      <h1>تجربة <span>العميل</span> = صافي الربح</h1>
+      <p>عميل سعيد = يرجع + يجيب معه أصحابه + يكتب تقييم إيجابي. الاستثمار في التجربة يُعيد نفسه عشرات الأضعاف.</p>
+    </div>
+    <div class="g2">
+      <div>
+        <div class="ib ok mb12"><div class="ib-title"><i class="fa-solid fa-heart c-g"></i> قاعدة الـ 5 دقائق</div><p>أول 5 دقائق من تجربة العميل تحدد كل شيء — الترحيب، سرعة الاستجابة، نظافة المكان.</p></div>
+        <div class="ib info mb12"><div class="ib-title"><i class="fa-solid fa-comments c-b"></i> معالجة الشكاوى</div><ul><li>استمع بدون مقاطعة</li><li>اعتذر بصدق — لا تجادل</li><li>قدم حلاً فورياً</li><li>تابع بعد الحل</li><li>اتعلم من الشكوى وصحّح</li></ul></div>
+        <div class="ib warn"><div class="ib-title"><i class="fa-solid fa-triangle-exclamation c-y"></i> محطمات تجربة العميل</div><ul><li>انتظار طويل بدون تواصل</li><li>موظف بوجه مكفهر</li><li>طعام بارد أو ناقص</li><li>مكان غير نظيف</li></ul></div>
+      </div>
+      <div>
+        <div class="card mb16"><div class="card-hdr"><div class="card-title"><i class="fa-solid fa-chart-bar"></i> KPIs تجربة العميل</div></div>
+          <div class="kpi-grid" style="margin-top:0">
+            <div class="kpi-item"><div class="kpi-val">4.5+</div><div class="kpi-lbl">تقييم Google</div></div>
+            <div class="kpi-item"><div class="kpi-val">&lt;2 ساعة</div><div class="kpi-lbl">وقت الرد على الشكاوى</div></div>
+            <div class="kpi-item"><div class="kpi-val">70%+</div><div class="kpi-lbl">نسبة العملاء المتكررين</div></div>
+            <div class="kpi-item"><div class="kpi-val">&lt;5%</div><div class="kpi-lbl">نسبة الشكاوى</div></div>
+            <div class="kpi-item"><div class="kpi-val">NPS 50+</div><div class="kpi-lbl">مؤشر التوصية</div></div>
+            <div class="kpi-item"><div class="kpi-val">100%</div><div class="kpi-lbl">الرد على التقييمات</div></div>
+          </div>
+        </div>
+        <div class="card"><div class="card-hdr"><div class="card-title"><i class="fa-solid fa-list-check"></i> Checklist تجربة العميل</div></div><ul class="chklist" id="cl-cx"></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== HR ===== -->
+  <div class="section" id="sec-hr">
+    <div class="hero">
+      <div class="hero-badge"><i class="fa-solid fa-users-gear"></i> التوظيف والتدريب</div>
+      <h1>فريقك هو <span>قوتك</span></h1>
+      <p>المطعم الناجح يبني ثقافة لا مجرد فريق عمل. الموظف السعيد يُسعد العميل، والعميل السعيد يُسعدك.</p>
+    </div>
+    <div class="g2">
+      <div>
+        <div class="ib info mb12"><div class="ib-title"><i class="fa-solid fa-user-plus c-b"></i> معايير التوظيف في SPARK</div><ul><li>الموقف أهم من الخبرة — علّم المهارة، لا تعلّم الشخصية</li><li>اختبار عملي قبل التعيين</li><li>مرجعيات من جهات عمل سابقة</li><li>وضوح في التوقعات من اليوم الأول</li></ul></div>
+        <div class="ib ok mb12"><div class="ib-title"><i class="fa-solid fa-graduation-cap c-g"></i> برنامج التدريب (14 يوم)</div><ul><li>يوم 1-3: الثقافة والقيم والسلامة</li><li>يوم 4-7: تدريب المطبخ والوصفات</li><li>يوم 8-10: خدمة العملاء والكاشير</li><li>يوم 11-14: تدريب مدمج مع إشراف</li></ul></div>
+        <div class="ib warn"><div class="ib-title"><i class="fa-solid fa-triangle-exclamation c-y"></i> أسباب دوران الموظفين</div><ul><li>راتب غير عادل</li><li>بيئة عمل سلبية</li><li>غياب التقدير والمكافأة</li><li>عدم وضوح التوقعات</li></ul></div>
+      </div>
+      <div>
+        <div class="card mb16"><div class="card-hdr"><div class="card-title"><i class="fa-solid fa-chart-bar"></i> KPIs الموارد البشرية</div></div>
+          <div class="kpi-grid" style="margin-top:0">
+            <div class="kpi-item"><div class="kpi-val">&lt;30%</div><div class="kpi-lbl">معدل دوران الموظفين سنوياً</div></div>
+            <div class="kpi-item"><div class="kpi-val">14 يوم</div><div class="kpi-lbl">مدة برنامج التأهيل</div></div>
+            <div class="kpi-item"><div class="kpi-val">شهري</div><div class="kpi-lbl">تقييم الموظفين</div></div>
+            <div class="kpi-item"><div class="kpi-val">&lt;5%</div><div class="kpi-lbl">نسبة التغيب</div></div>
+            <div class="kpi-item"><div class="kpi-val">ربعي</div><div class="kpi-lbl">مراجعة الرواتب</div></div>
+            <div class="kpi-item"><div class="kpi-val">100%</div><div class="kpi-lbl">موظفين مدربين على السلامة</div></div>
+          </div>
+        </div>
+        <div class="card"><div class="card-hdr"><div class="card-title"><i class="fa-solid fa-list-check"></i> Checklist التوظيف</div></div><ul class="chklist" id="cl-hr"></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TECH ===== -->
+  <div class="section" id="sec-tech">
+    <div class="hero">
+      <div class="hero-badge"><i class="fa-solid fa-laptop-code"></i> التكنولوجيا والأنظمة</div>
+      <h1>التكنولوجيا <span>تُحرر</span> وقتك</h1>
+      <p>النظام التقني الصحيح يقلل الأخطاء، يسرّع الخدمة، ويعطيك بيانات تساعدك في قرارات أفضل.</p>
+    </div>
+    <div class="g2">
+      <div>
+        <div class="ib info mb12"><div class="ib-title"><i class="fa-solid fa-cash-register c-b"></i> نظام POS</div><p>أهم نظام في المطعم. يجب أن يدعم: فصل الطلبات، تقارير المبيعات، إدارة المخزون، وتتبع الأداء.</p></div>
+        <div class="ib ok mb12"><div class="ib-title"><i class="fa-solid fa-check c-g"></i> الأنظمة الأساسية لـ SPARK</div><ul><li>POS: نقطة بيع متكاملة</li><li>نظام طلبات التوصيل (أوتو، طلبات)</li><li>إدارة المخزون الرقمي</li><li>CRM بسيط لتتبع العملاء</li><li>نظام جدولة الموظفين</li></ul></div>
+        <div class="ib warn"><div class="ib-title"><i class="fa-solid fa-triangle-exclamation c-y"></i> أخطاء تقنية شائعة</div><ul><li>شراء أنظمة غالية بدون تدريب</li><li>إهمال تقارير POS</li><li>عدم ربط المخزون بالمبيعات</li><li>غياب الـ Backup للبيانات</li></ul></div>
+      </div>
+      <div>
+        <div class="card mb16"><div class="card-hdr"><div class="card-title"><i class="fa-solid fa-chart-bar"></i> KPIs التكنولوجيا</div></div>
+          <div class="kpi-grid" style="margin-top:0">
+            <div class="kpi-item"><div class="kpi-val">99%</div><div class="kpi-lbl">وقت عمل POS</div></div>
+            <div class="kpi-item"><div class="kpi-val">يومي</div><div class="kpi-lbl">مراجعة تقارير المبيعات</div></div>
+            <div class="kpi-item"><div class="kpi-val">&lt;1%</div><div class="kpi-lbl">أخطاء الطلبات الرقمية</div></div>
+            <div class="kpi-item"><div class="kpi-val">أسبوعي</div><div class="kpi-lbl">نسخ احتياطي للبيانات</div></div>
+            <div class="kpi-item"><div class="kpi-val">100%</div><div class="kpi-lbl">موظفين مدربين على POS</div></div>
+            <div class="kpi-item"><div class="kpi-val">شهري</div><div class="kpi-lbl">تحليل بيانات العملاء</div></div>
+          </div>
+        </div>
+        <div class="card"><div class="card-hdr"><div class="card-title"><i class="fa-solid fa-list-check"></i> Checklist التقني</div></div><ul class="chklist" id="cl-tech"></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SCALE ===== -->
+  <div class="section" id="sec-scale">
+    <div class="hero">
+      <div class="hero-badge"><i class="fa-solid fa-arrow-trend-up"></i> التوسع وإدارة الفروع</div>
+      <h1>من فرع واحد إلى <span>امبراطورية</span></h1>
+      <p>التوسع ليس عن المال — عن الأنظمة. اذا كان الفرع الأول يعمل وحده، أنت جاهز للتوسع.</p>
+    </div>
+    <div class="g2">
+      <div>
+        <div class="ib info mb12"><div class="ib-title"><i class="fa-solid fa-lightbulb c-b"></i> متى تتوسع؟</div><ul><li>الفرع الأول ربح ثابت لمدة 12 شهر</li><li>عندك Playbook موثق لكل شيء</li><li>فريق قادر على الإدارة المستقلة</li><li>عندك رأس مال كافٍ + احتياطي</li></ul></div>
+        <div class="ib ok mb12"><div class="ib-title"><i class="fa-solid fa-book c-g"></i> الـ Playbook — كتاب التشغيل</div><ul><li>كل الـ SOPs موثقة</li><li>وصفات موحدة بالأوزان</li><li>برنامج تدريب محدد</li><li>KPIs لكل قسم</li><li>دليل اختيار الموقع</li></ul></div>
+        <div class="ib warn"><div class="ib-title"><i class="fa-solid fa-triangle-exclamation c-y"></i> أخطاء التوسع</div><ul><li>التوسع قبل ضبط الفرع الأول</li><li>غياب الـ Playbook الموثق</li><li>اختيار موقع خاطئ بسبب السعر الرخيص</li><li>عدم وجود نظام مركزي للمراقبة</li></ul></div>
+      </div>
+      <div>
+        <div class="card mb16"><div class="card-hdr"><div class="card-title"><i class="fa-solid fa-chart-bar"></i> KPIs التوسع</div></div>
+          <div class="kpi-grid" style="margin-top:0">
+            <div class="kpi-item"><div class="kpi-val">12 شهر</div><div class="kpi-lbl">ربح ثابت قبل التوسع</div></div>
+            <div class="kpi-item"><div class="kpi-val">100%</div><div class="kpi-lbl">Playbook موثق</div></div>
+            <div class="kpi-item"><div class="kpi-val">6 أشهر</div><div class="kpi-lbl">احتياطي نقدي</div></div>
+            <div class="kpi-item"><div class="kpi-val">12 شهر</div><div class="kpi-lbl">Break-even الفرع الجديد</div></div>
+            <div class="kpi-item"><div class="kpi-val">أسبوعي</div><div class="kpi-lbl">تقرير كل فرع للمركز</div></div>
+            <div class="kpi-item"><div class="kpi-val">موحدة</div><div class="kpi-lbl">جودة المنتج عبر الفروع</div></div>
+          </div>
+        </div>
+        <div class="card"><div class="card-hdr"><div class="card-title"><i class="fa-solid fa-list-check"></i> Checklist التوسع</div></div><ul class="chklist" id="cl-scale"></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CALCULATOR ===== -->
+  <div class="section" id="sec-calculator">
+    <div class="hero">
+      <div class="hero-badge"><i class="fa-solid fa-calculator"></i> حاسبة تكلفة الطعام</div>
+      <h1>احسب <span>تكلفتك</span> بدقة</h1>
+      <p>اعرف هامش ربحك قبل ما تحدد السعر. حاسبة سريعة للـ Food Cost والربح الصافي.</p>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="card-hdr"><div class="card-title"><i class="fa-solid fa-sliders"></i> إدخال البيانات</div></div>
+        <div class="calc-wrap">
+          <div style="margin-bottom:14px"><label class="form-lbl">اسم الصنف</label><input type="text" class="form-input" id="c-name" placeholder="مثال: بيتزا مارجريتا"></div>
+          <div style="margin-bottom:14px"><label class="form-lbl">تكلفة المكونات الإجمالية (جنيه)</label><input type="number" class="form-input" id="c-cost" placeholder="مثال: 35" oninput="calcFood()"></div>
+          <div style="margin-bottom:14px"><label class="form-lbl">تكلفة التغليف (جنيه)</label><input type="number" class="form-input" id="c-pack" placeholder="مثال: 5" oninput="calcFood()"></div>
+          <div style="margin-bottom:14px"><label class="form-lbl">تكلفة العمالة لكل طلب (جنيه)</label><input type="number" class="form-input" id="c-labor" placeholder="مثال: 8" oninput="calcFood()"></div>
+          <div style="margin-bottom:14px"><label class="form-lbl">سعر البيع للعميل (جنيه)</label><input type="number" class="form-input" id="c-price" placeholder="مثال: 120" oninput="calcFood()"></div>
+          <div style="margin-bottom:0"><label class="form-lbl">فئة الصنف</label>
+            <select class="form-select" id="c-cat">
+              <option>🍕 بيتزا</option><option>🥞 كريب</option><option>🫓 كالزون</option><option>🍟 فرايز</option><option>🧃 مشروب</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card mb16">
+          <div class="card-hdr"><div class="card-title"><i class="fa-solid fa-chart-pie"></i> نتيجة التحليل</div></div>
+          <div class="calc-result" id="calc-result">
+            <div class="res-item"><div class="res-val" id="res-foodcost">—</div><div class="res-lbl">Food Cost %</div></div>
+            <div class="res-item"><div class="res-val" id="res-profit">—</div><div class="res-lbl">الربح الصافي</div></div>
+            <div class="res-item"><div class="res-val" id="res-margin">—</div><div class="res-lbl">هامش الربح %</div></div>
+          </div>
+          <div id="calc-verdict" class="ib mt12" style="margin-top:12px;margin-bottom:0;display:none"></div>
+        </div>
+        <div class="card mb16">
+          <div class="card-hdr"><div class="card-title"><i class="fa-solid fa-table"></i> جدول أصناف SPARK</div></div>
+          <div id="items-table" style="overflow-x:auto"></div>
+          <button class="btn btn-primary mt12 btn-sm" onclick="addToTable()" style="margin-top:12px"><i class="fa-solid fa-plus"></i> أضف للجدول</button>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-title"><i class="fa-solid fa-graduation-cap"></i> دليل نسب Food Cost</div></div>
+          <div class="kpi-grid" style="margin-top:0">
+            <div class="kpi-item" style="border-color:rgba(34,197,94,.3)"><div class="kpi-val" style="color:var(--green)">20-28%</div><div class="kpi-lbl">ممتاز 🏆</div></div>
+            <div class="kpi-item" style="border-color:rgba(59,130,246,.3)"><div class="kpi-val" style="color:var(--accent)">28-32%</div><div class="kpi-lbl">جيد ✅</div></div>
+            <div class="kpi-item" style="border-color:rgba(234,179,8,.3)"><div class="kpi-val" style="color:var(--yellow)">32-38%</div><div class="kpi-lbl">راجع ⚠️</div></div>
+            <div class="kpi-item" style="border-color:rgba(239,68,68,.3)"><div class="kpi-val" style="color:var(--red)">38%+</div><div class="kpi-lbl">خطر ❌</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- TOAST -->
+<div id="toast"><i class="fa-solid fa-circle-check" style="color:var(--green)"></i><span id="toast-msg">تم الحفظ!</span></div>
+
+<script>
+// ===== DATA =====
+const SECTIONS = [
+  {id:'kitchen',label:'المطبخ',icon:'fa-fire-burner',color:'--primary'},
+  {id:'operations',label:'التشغيل',icon:'fa-gears',color:'--accent'},
+  {id:'finance',label:'الماليات',icon:'fa-sack-dollar',color:'--green'},
+  {id:'inventory',label:'المخزون',icon:'fa-boxes-stacked',color:'--yellow'},
+  {id:'safety',label:'السلامة',icon:'fa-shield-halved',color:'--red'},
+  {id:'rnd',label:'R&D',icon:'fa-flask-vial',color:'--purple'},
+  {id:'menu',label:'المنيو',icon:'fa-book-open-reader',color:'--pink'},
+  {id:'marketing',label:'التسويق',icon:'fa-bullhorn',color:'--teal'},
+  {id:'cx',label:'العملاء',icon:'fa-star-half-stroke',color:'--accent2'},
+  {id:'hr',label:'الموارد البشرية',icon:'fa-users-gear',color:'--green'},
+  {id:'tech',label:'التكنولوجيا',icon:'fa-laptop-code',color:'--primary'},
+  {id:'scale',label:'التوسع',icon:'fa-arrow-trend-up',color:'--yellow'},
+];
+
+const CHECKLISTS = {
+  'cl-kitchen-morning': [
+    {t:'فحص درجات حرارة الثلاجات والفريزر',p:'h'},
+    {t:'مراجعة المواد وتواريخ الصلاحية',p:'h'},
+    {t:'تجهيز Mise en Place للخدمة',p:'h'},
+    {t:'اختبار الفرن والمعدات',p:'h'},
+    {t:'التوقيع على Line Check Sheet',p:'h'},
+    {t:'تجهيز عجينة البيتزا',p:'m'},
+    {t:'تجهيز خلطة الكريب',p:'m'},
+    {t:'تحضير صوصات SPARK',p:'m'},
+    {t:'التأكد من نظافة ألواح التقطيع',p:'m'},
+    {t:'فحص مستوى زيت الفرايز',p:'l'},
+  ],
+  'cl-kitchen-close': [
+    {t:'تنظيف وتعقيم جميع الأسطح',p:'h'},
+    {t:'حفظ بواقي الطعام بشكل صحيح',p:'h'},
+    {t:'تسجيل درجات الحرارة النهائية',p:'h'},
+    {t:'تنظيف الفرن والغريل',p:'m'},
+    {t:'تفريغ وتنظيف مصفاة زيت الفرايز',p:'m'},
+    {t:'ملء سجل الهدر اليومي',p:'m'},
+    {t:'تجهيز العجينة لليوم القادم',p:'l'},
+    {t:'التأكد من إغلاق غازات الطهي',p:'h'},
+  ],
+  'cl-ops-open': [
+    {t:'فتح المطعم والتأكد من جميع الأقسام',p:'h'},
+    {t:'التحقق من حضور الفريق كاملاً',p:'h'},
+    {t:'اجتماع الوردية (10 دقائق)',p:'h'},
+    {t:'فحص نظافة منطقة استقبال العملاء',p:'m'},
+    {t:'التأكد من شغل POS والأنظمة',p:'h'},
+    {t:'مراجعة حجوزات وطلبات مسبقة',p:'m'},
+    {t:'التحقق من كمية الـ Change في الكاشير',p:'m'},
+    {t:'رفع علامة "مفتوح" وتشغيل الإضاءة',p:'l'},
+  ],
+  'cl-ops-close': [
+    {t:'تقرير المبيعات اليومي',p:'h'},
+    {t:'جرد الكاشير وتطابق الأرقام',p:'h'},
+    {t:'Shift Handover مع الوردية التالية',p:'h'},
+    {t:'ملء سجل الحوادث إن وجدت',p:'m'},
+    {t:'إيداع النقدية بشكل آمن',p:'h'},
+    {t:'التأكد من إغلاق جميع الأبواب',p:'m'},
+    {t:'إرسال تقرير اليوم للمدير',p:'m'},
+    {t:'مراجعة طلبات الغد',p:'l'},
+  ],
+  'cl-finance': [
+    {t:'حساب Food Cost لكل صنف',p:'h'},
+    {t:'مراجعة P&L الشهري',p:'h'},
+    {t:'تحليل هامش ربح كل فئة',p:'h'},
+    {t:'مقارنة الفعلي بالمستهدف',p:'m'},
+    {t:'مراجعة أسعار الموردين',p:'m'},
+    {t:'حساب نسبة الهدر الشهرية',p:'m'},
+    {t:'تقييم أداء الأصناف وفق المبيعات',p:'l'},
+    {t:'مراجعة تكاليف العمالة',p:'l'},
+  ],
+  'cl-inventory': [
+    {t:'جرد المواد سريعة التلف صباحاً',p:'h'},
+    {t:'التحقق من تطبيق FIFO',p:'h'},
+    {t:'مراجعة تواريخ الصلاحية لكل شيء',p:'h'},
+    {t:'تسجيل الاستلام في سجل التوريد',p:'m'},
+    {t:'التحقق من Par Levels لكل صنف',p:'m'},
+    {t:'تقرير الهدر اليومي',p:'m'},
+    {t:'جرد أسبوعي شامل للمخزن',p:'l'},
+    {t:'مراجعة أداء الموردين شهرياً',p:'l'},
+  ],
+  'cl-safety': [
+    {t:'فحص درجات حرارة ثلاثة مرات يومياً',p:'h'},
+    {t:'التأكد من ارتداء القفازات والشعر',p:'h'},
+    {t:'غسل الأيدي كل 30 دقيقة',p:'h'},
+    {t:'فصل الأطعمة الخام عن المطبوخة',p:'h'},
+    {t:'التحقق من تواريخ الصلاحية',p:'h'},
+    {t:'تنظيف وتعقيم الأسطح باستمرار',p:'m'},
+    {t:'فحص ألواح التقطيع والأدوات',p:'m'},
+    {t:'تدريب شهري على السلامة الغذائية',p:'l'},
+  ],
+  'cl-menu': [
+    {t:'تحديد Stars وDogs في المنيو',p:'h'},
+    {t:'مراجعة Food Cost لكل صنف',p:'h'},
+    {t:'تحليل مبيعات كل صنف شهرياً',p:'h'},
+    {t:'تحديث صور المنيو كل 6 أشهر',p:'m'},
+    {t:'اختبار صنف موسمي كل 3 أشهر',p:'m'},
+    {t:'مراجعة أسعار المنيو كل 3 أشهر',p:'m'},
+    {t:'تدريب الكاشير على Upselling',p:'l'},
+    {t:'مقارنة المنيو مع المنافسين',p:'l'},
+  ],
+  'cl-marketing': [
+    {t:'نشر 4 محتويات على إنستجرام أسبوعياً',p:'h'},
+    {t:'الرد على جميع التعليقات والتقييمات',p:'h'},
+    {t:'نشر Stories يومياً',p:'m'},
+    {t:'مراجعة Insights وبيانات الأداء',p:'m'},
+    {t:'إطلاق عرض أسبوعي على الأقل',p:'m'},
+    {t:'تصوير محتوى لأسبوع قادم',p:'l'},
+    {t:'متابعة Trends والموضات',p:'l'},
+    {t:'تحديث Google Business Profile',p:'l'},
+  ],
+  'cl-cx': [
+    {t:'التأكد من ترحيب الفريق بالعملاء',p:'h'},
+    {t:'قراءة وتحليل تقييمات اليوم',p:'h'},
+    {t:'الرد على كل شكوى خلال ساعتين',p:'h'},
+    {t:'فحص نظافة منطقة الاستقبال',p:'m'},
+    {t:'التأكد من سرعة الخدمة (أقل من 8 دق)',p:'m'},
+    {t:'جمع Feedback من 3 عملاء يومياً',p:'l'},
+    {t:'مراجعة NPS شهرياً',p:'l'},
+    {t:'تدريب الفريق على التعامل مع الشكاوى',p:'l'},
+  ],
+  'cl-hr': [
+    {t:'مراجعة جدول العمل الأسبوعي',p:'h'},
+    {t:'تقييم أداء الموظفين شهرياً',p:'h'},
+    {t:'التأكد من تدريب الموظفين الجدد',p:'h'},
+    {t:'ملء سجل الحضور والانصراف',p:'m'},
+    {t:'مراجعة مستوى رضا الفريق',p:'m'},
+    {t:'توثيق أي مشاكل أو إنجازات',p:'m'},
+    {t:'برنامج تدريب شهري للفريق',p:'l'},
+    {t:'مراجعة الرواتب كل 3 أشهر',p:'l'},
+  ],
+  'cl-tech': [
+    {t:'التأكد من عمل POS بشكل صحيح',p:'h'},
+    {t:'مراجعة تقارير المبيعات اليومية',p:'h'},
+    {t:'فحص نظام طلبات التوصيل',p:'h'},
+    {t:'نسخ احتياطي للبيانات أسبوعياً',p:'m'},
+    {t:'تحديث أنظمة التوصيل والطلبات',p:'m'},
+    {t:'مراجعة تحليلات الأداء الرقمي',p:'l'},
+    {t:'تدريب الموظفين على التحديثات',p:'l'},
+    {t:'فحص أمان الشبكة وكلمات المرور',p:'l'},
+  ],
+  'cl-scale': [
+    {t:'توثيق كل SOPs في Playbook رسمي',p:'h'},
+    {t:'التأكد من ربح ثابت لمدة 12 شهر',p:'h'},
+    {t:'تدريب مدير قادر على الإدارة المستقلة',p:'h'},
+    {t:'بحث وتحليل مواقع الفروع المحتملة',p:'m'},
+    {t:'إعداد دراسة جدوى للفرع الجديد',p:'m'},
+    {t:'بناء احتياطي نقدي كافٍ',p:'m'},
+    {t:'إعداد نظام مراقبة مركزي للفروع',p:'l'},
+    {t:'استشارة خبير قانوني لعقود الفروع',p:'l'},
+  ],
+};
+
+const PAGE_TITLES = {
+  dashboard:'لوحة التحكم',roadmap:'خارطة الطريق',
+  kitchen:'المطبخ',operations:'الإدارة والتشغيل',
+  finance:'التكاليف والماليات',inventory:'المخزون والمشتريات',
+  safety:'السلامة الغذائية',rnd:'البحث والتطوير',
+  menu:'المنيو والهندسة',marketing:'التسويق والبراند',
+  cx:'خدمة العملاء',hr:'التوظيف والتدريب',
+  tech:'التكنولوجيا والأنظمة',scale:'التوسع وإدارة الفروع',
+  calculator:'حاسبة تكلفة الطعام',
+};
+
+// ===== INIT =====
+let itemsTable = JSON.parse(localStorage.getItem('spark_items') || '[]');
+let rndEntries = JSON.parse(localStorage.getItem('spark_rnd') || '[]');
+
+function init() {
+  renderChecklists();
+  renderRND();
+  renderItemsTable();
+  updateDashboard();
+  buildMiniCards();
+  buildSectionProgress();
+}
+
+// ===== NAVIGATION =====
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const sec = document.getElementById('sec-'+id);
+  if(sec) sec.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if(n.getAttribute('onclick') && n.getAttribute('onclick').includes("'"+id+"'")) n.classList.add('active');
+  });
+  document.getElementById('page-title').textContent = PAGE_TITLES[id] || id;
+  closeSidebar();
+  window.scrollTo(0,0);
+  if(id==='dashboard') updateDashboard();
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+// ===== TABS =====
+function openTab(section, tab) {
+  const panes = document.querySelectorAll(`#sec-${section} .tab-pane`);
+  const btns = document.querySelectorAll(`#sec-${section} .tab-btn`);
+  panes.forEach(p => p.classList.remove('active'));
+  btns.forEach(b => b.classList.remove('active'));
+  const pane = document.getElementById(`${section}-${tab}`)||document.getElementById(`${tab}`);
+  if(pane) pane.classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ===== CHECKLISTS =====
+function renderChecklists() {
+  Object.entries(CHECKLISTS).forEach(([id, items]) => {
+    const ul = document.getElementById(id);
+    if(!ul) return;
+    ul.innerHTML = '';
+    items.forEach((item, i) => {
+      const key = `${id}_${i}`;
+      const done = localStorage.getItem(key) === '1';
+      const li = document.createElement('li');
+      li.className = done ? 'done' : '';
+      li.innerHTML = `<div class="chk-box">${done?'<i class="fa-solid fa-check"></i>':''}</div><span class="chk-txt">${item.t}</span><span class="chk-pri p-${item.p}">${item.p==='h'?'مهم':item.p==='m'?'متوسط':'منخفض'}</span>`;
+      li.onclick = () => toggleCheck(id, i, li);
+      ul.appendChild(li);
+    });
+  });
+}
+
+function toggleCheck(id, i, li) {
+  const key = `${id}_${i}`;
+  const done = localStorage.getItem(key) === '1';
+  if(!done) {
+    localStorage.setItem(key, '1');
+    li.classList.add('done');
+    li.querySelector('.chk-box').innerHTML = '<i class="fa-solid fa-check"></i>';
+    showToast('✅ تم إنجاز المهمة!');
+  } else {
+    localStorage.removeItem(key);
+    li.classList.remove('done');
+    li.querySelector('.chk-box').innerHTML = '';
+  }
+  updateDashboard();
+}
+
+function getTotalChecks() {
+  let total = 0, done = 0;
+  Object.entries(CHECKLISTS).forEach(([id, items]) => {
+    items.forEach((_, i) => {
+      total++;
+      if(localStorage.getItem(`${id}_${i}`) === '1') done++;
+    });
+  });
+  return {total, done};
+}
+
+function getSectionProgress(secId) {
+  const clIds = Object.keys(CHECKLISTS).filter(k => k.includes(secId.replace('cl-','')));
+  let total = 0, done = 0;
+  clIds.forEach(id => {
+    const items = CHECKLISTS[id] || [];
+    items.forEach((_, i) => {
+      total++;
+      if(localStorage.getItem(`${id}_${i}`) === '1') done++;
+    });
+  });
+  return {total, done, pct: total ? Math.round(done/total*100) : 0};
+}
+
+// ===== DASHBOARD =====
+function updateDashboard() {
+  const {total, done} = getTotalChecks();
+  const pct = total ? Math.round(done/total*100) : 0;
+  const rem = total - done;
+
+  ['d-pct','stat-progress'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=pct+'%'; });
+  ['d-done'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=done; });
+  ['d-rem'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=rem; });
+  const rndCount = rndEntries.length;
+  const drnd=document.getElementById('d-rnd'); if(drnd) drnd.textContent=rndCount;
+
+  const sbp=document.getElementById('sb-pbar'); if(sbp) sbp.style.width=pct+'%';
+  const sbpct=document.getElementById('sb-pct'); if(sbpct) sbpct.textContent=pct+'%';
+  const sbtkl=document.getElementById('sb-tasks-lbl'); if(sbtkl) sbtkl.textContent=done+' مهمة منجزة';
+  const gp=document.getElementById('global-progress'); if(gp) gp.style.width=pct+'%';
+  const gpct=document.getElementById('global-percent'); if(gpct) gpct.textContent=pct+'% مكتمل';
+
+  buildSectionProgress();
+  if(pct===100) { const cb=document.getElementById('comp-badge'); if(cb) cb.classList.add('show'); }
+}
+
+function buildSectionProgress() {
+  const el = document.getElementById('sec-prog-list');
+  if(!el) return;
+  const secMap = {
+    kitchen:'kitchen',operations:'ops',finance:'finance',
+    inventory:'inventory',safety:'safety',rnd:'rnd',
+    menu:'menu',marketing:'marketing',cx:'cx',
+    hr:'hr',tech:'tech',scale:'scale'
+  };
+  const colors = ['','blue','green','','','purple','pink','teal','blue','green','',''];
+  el.innerHTML = '';
+  SECTIONS.forEach((s,i) => {
+    const prefix = secMap[s.id];
+    const clIds = Object.keys(CHECKLISTS).filter(k => k.startsWith('cl-'+prefix)||k.startsWith('cl-'+s.id));
+    let total=0,done=0;
+    clIds.forEach(id => {
+      (CHECKLISTS[id]||[]).forEach((_,j) => { total++; if(localStorage.getItem(`${id}_${j}`)==='1') done++; });
+    });
+    const pct = total ? Math.round(done/total*100) : 0;
+    const color = colors[i] || '';
+    el.innerHTML += `<div class="prog-wrap"><div class="prog-lbl"><span>${s.label}</span><span>${pct}%</span></div><div class="prog-bar"><div class="prog-fill ${color}" style="width:${pct}%"></div></div></div>`;
+  });
+}
+
+function buildMiniCards() {
+  const el = document.getElementById('mini-sec-cards');
+  if(!el) return;
+  SECTIONS.forEach(s => {
+    const div = document.createElement('div');
+    div.style.cssText='background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px 10px;text-align:center;cursor:pointer;transition:all .2s';
+    div.innerHTML = `<i class="fa-solid ${s.icon}" style="color:var(${s.color});font-size:18px;margin-bottom:6px;display:block"></i><div style="font-size:11.5px;font-weight:700">${s.label}</div>`;
+    div.onclick = () => show(s.id);
+    div.onmouseover = () => div.style.borderColor='var(--primary)';
+    div.onmouseout = () => div.style.borderColor='var(--border)';
+    el.appendChild(div);
+  });
+}
+
+// ===== R&D =====
+function saveRND() {
+  const name = document.getElementById('rnd-name').value.trim();
+  if(!name) { showToast('⚠️ أدخل اسم الصنف'); return; }
+  const entry = {
+    id: Date.now(),
+    name,
+    cat: document.getElementById('rnd-cat').value,
+    recipe: document.getElementById('rnd-recipe').value,
+    notes: document.getElementById('rnd-notes').value,
+    rating: document.getElementById('rnd-rating').value,
+    status: document.getElementById('rnd-status').value,
+    date: new Date().toLocaleDateString('ar-EG')
+  };
+  rndEntries.unshift(entry);
+  localStorage.setItem('spark_rnd', JSON.stringify(rndEntries));
+  document.getElementById('rnd-name').value='';
+  document.getElementById('rnd-recipe').value='';
+  document.getElementById('rnd-notes').value='';
+  renderRND();
+  updateDashboard();
+  showToast('🧪 تم حفظ التجربة!');
+}
+
+function deleteRND(id) {
+  rndEntries = rndEntries.filter(e => e.id !== id);
+  localStorage.setItem('spark_rnd', JSON.stringify(rndEntries));
+  renderRND();
+  updateDashboard();
+}
+
+function renderRND() {
+  const el = document.getElementById('rnd-list');
+  const badge = document.getElementById('rnd-count-badge');
+  if(badge) badge.textContent = rndEntries.length + ' تجربة';
+  if(!el) return;
+  if(!rndEntries.length) {
+    el.innerHTML='<div style="text-align:center;padding:40px;color:var(--text3)"><i class="fa-solid fa-flask" style="font-size:32px;margin-bottom:12px;display:block"></i>لا توجد تجارب بعد — ابدأ التجربة الأولى!</div>';
+    return;
+  }
+  el.innerHTML = rndEntries.map(e => `
+    <div class="rnd-entry">
+      <div class="rnd-hdr">
+        <div><div class="rnd-name">${e.name}</div><div class="rnd-date">${e.date} · ${e.cat}</div></div>
+        <button class="rnd-del" onclick="deleteRND(${e.id})"><i class="fa-solid fa-trash"></i></button>
+      </div>
+      ${e.recipe?`<div class="rnd-notes mb8"><strong>الوصفة:</strong> ${e.recipe}</div>`:''}
+      ${e.notes?`<div class="rnd-notes">${e.notes}</div>`:''}
+      <div class="rnd-tags">
+        <span class="rnd-tag">${e.rating}</span>
+        <span class="rnd-tag">${e.status}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===== CALCULATOR =====
+function calcFood() {
+  const cost = parseFloat(document.getElementById('c-cost').value)||0;
+  const pack = parseFloat(document.getElementById('c-pack').value)||0;
+  const labor = parseFloat(document.getElementById('c-labor').value)||0;
+  const price = parseFloat(document.getElementById('c-price').value)||0;
+  if(!price || !cost) { clearCalc(); return; }
+  const totalCost = cost + pack + labor;
+  const foodCostPct = (cost/price*100).toFixed(1);
+  const totalCostPct = (totalCost/price*100).toFixed(1);
+  const profit = (price - totalCost).toFixed(2);
+  const margin = ((profit/price)*100).toFixed(1);
+
+  const fcEl = document.getElementById('res-foodcost');
+  const prEl = document.getElementById('res-profit');
+  const mrEl = document.getElementById('res-margin');
+  fcEl.textContent = foodCostPct + '%';
+  prEl.textContent = profit + ' ج';
+  mrEl.textContent = margin + '%';
+
+  fcEl.className = 'res-val ' + (foodCostPct<=28?'good':foodCostPct<=35?'warn':'bad');
+  prEl.className = 'res-val ' + (profit>0?'good':'bad');
+  mrEl.className = 'res-val ' + (margin>=15?'good':margin>=8?'warn':'bad');
+
+  const verdict = document.getElementById('calc-verdict');
+  verdict.style.display = 'block';
+  if(foodCostPct <= 28) {
+    verdict.className='ib ok';
+    verdict.innerHTML='<div class="ib-title"><i class="fa-solid fa-trophy c-g"></i> ممتاز!</div><p>Food Cost ممتاز — هذا الصنف مربح جداً. حافظ على جودته وروّج له.</p>';
+  } else if(foodCostPct <= 35) {
+    verdict.className='ib info';
+    verdict.innerHTML='<div class="ib-title"><i class="fa-solid fa-check c-b"></i> جيد</div><p>Food Cost في النطاق المقبول. يمكن تحسينه بمراجعة الـ Portion أو التفاوض مع الموردين.</p>';
+  } else {
+    verdict.className='ib danger';
+    verdict.innerHTML='<div class="ib-title"><i class="fa-solid fa-triangle-exclamation c-r"></i> تحذير — راجع التسعير!</div><p>Food Cost مرتفع جداً. ارفع السعر أو قلل التكلفة فوراً.</p>';
+  }
+}
+
+function clearCalc() {
+  ['res-foodcost','res-profit','res-margin'].forEach(id => {
+    const el=document.getElementById(id); if(el){el.textContent='—';el.className='res-val';}
+  });
+  const v=document.getElementById('calc-verdict'); if(v) v.style.display='none';
+}
+
+function addToTable() {
+  const name=document.getElementById('c-name').value.trim()||'صنف جديد';
+  const cost=parseFloat(document.getElementById('c-cost').value)||0;
+  const pack=parseFloat(document.getElementById('c-pack').value)||0;
+  const labor=parseFloat(document.getElementById('c-labor').value)||0;
+  const price=parseFloat(document.getElementById('c-price').value)||0;
+  if(!price||!cost){showToast('⚠️ أدخل التكلفة والسعر');return;}
+  const fc=(cost/price*100).toFixed(1);
+  const profit=(price-cost-pack-labor).toFixed(1);
+  itemsTable.push({name,cost,pack,labor,price,fc,profit,cat:document.getElementById('c-cat').value});
+  localStorage.setItem('spark_items',JSON.stringify(itemsTable));
+  renderItemsTable();
+  showToast('✅ تمت الإضافة للجدول!');
+}
+
+function renderItemsTable() {
+  const el=document.getElementById('items-table');
+  if(!el) return;
+  if(!itemsTable.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px">أضف أصناف لمشاهدة الجدول</div>';return;}
+  el.innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:12.5px">
+    <tr style="border-bottom:1px solid var(--border)">
+      <th style="text-align:right;padding:8px 4px;color:var(--text2)">الصنف</th>
+      <th style="text-align:right;padding:8px 4px;color:var(--text2)">التكلفة</th>
+      <th style="text-align:right;padding:8px 4px;color:var(--text2)">السعر</th>
+      <th style="text-align:right;padding:8px 4px;color:var(--text2)">FC%</th>
+      <th style="text-align:right;padding:8px 4px;color:var(--text2)">ربح</th>
+      <th style="padding:4px"></th>
+    </tr>
+    ${itemsTable.map((item,i)=>`
+    <tr style="border-bottom:1px solid var(--border)">
+      <td style="padding:8px 4px;font-weight:600">${item.name}</td>
+      <td style="padding:8px 4px;color:var(--text2)">${item.cost}</td>
+      <td style="padding:8px 4px;color:var(--text2)">${item.price}</td>
+      <td style="padding:8px 4px;color:${item.fc<=28?'var(--green)':item.fc<=35?'var(--yellow)':'var(--red)'}"><strong>${item.fc}%</strong></td>
+      <td style="padding:8px 4px;color:var(--green)">${item.profit}</td>
+      <td style="padding:4px"><button onclick="removeItem(${i})" style="background:rgba(239,68,68,.1);border:none;color:var(--red);padding:3px 7px;border-radius:5px;cursor:pointer;font-size:11px">حذف</button></td>
+    </tr>`).join('')}
+  </table>`;
+}
+
+function removeItem(i) {
+  itemsTable.splice(i,1);
+  localStorage.setItem('spark_items',JSON.stringify(itemsTable));
+  renderItemsTable();
+}
+
+// ===== THEME =====
+function toggleTheme() {
+  document.body.classList.toggle('light');
+  const ico=document.getElementById('theme-ico');
+  if(document.body.classList.contains('light')){ico.className='fa-solid fa-sun';localStorage.setItem('spark_theme','light');}
+  else{ico.className='fa-solid fa-moon';localStorage.setItem('spark_theme','dark');}
+}
+
+// ===== TOAST =====
+let toastTimeout;
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  document.getElementById('toast-msg').textContent=msg;
+  t.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ===== START =====
+window.onload = () => {
+  if(localStorage.getItem('spark_theme')==='light'){
+    document.body.classList.add('light');
+    document.getElementById('theme-ico').className='fa-solid fa-sun';
+  }
+  init();
+};
+</script>
+</body>
+</html>
